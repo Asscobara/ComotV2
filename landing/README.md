@@ -1,6 +1,8 @@
 # ComOt — Marketing Landing Page
 
-Static, dependency-free landing page (single `index.html` + assets). Built in **Design Direction 1 — "Warm Community"** (see `../docs/DESIGN_PROPOSALS.md`).
+Static, dependency-free landing page (single `index.html` + assets). Built in the approved **Design Direction 2 — "Clean Ledger"** (indigo/white fintech aesthetic, see `../docs/DESIGN_PROPOSALS.md`).
+
+> The header/footer mark is a placeholder based on logo Option A — it will be replaced with the final SVG once a logo is selected (see `../docs/LOGO_OPTIONS.md`).
 
 ## Features
 

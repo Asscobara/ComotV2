@@ -9,8 +9,9 @@ Residential building management platform — connecting tenants, house committee
 | Deliverable | Where | Status |
 | --- | --- | --- |
 | Product specification | [`docs/PRODUCT_SPEC.md`](docs/PRODUCT_SPEC.md) | ✅ Drafted |
-| Design direction proposals (3 options) | [`docs/DESIGN_PROPOSALS.md`](docs/DESIGN_PROPOSALS.md) | ⏳ Awaiting approval |
-| Marketing landing page | [`landing/`](landing/) | ⏳ Awaiting approval |
+| Design direction | [`docs/DESIGN_PROPOSALS.md`](docs/DESIGN_PROPOSALS.md) | ✅ Approved — Direction 2 "Clean Ledger" |
+| Logo options (4 concepts) | [`docs/LOGO_OPTIONS.md`](docs/LOGO_OPTIONS.md) | ⏳ Awaiting selection |
+| Marketing landing page | [`landing/`](landing/) | ⏳ Built in approved design, awaiting approval |
 | Technology stack selection | [`docs/TECH_STACK.md`](docs/TECH_STACK.md) | ✅ Proposed |
 | Repository plan | [`docs/REPOSITORIES.md`](docs/REPOSITORIES.md) | ✅ Proposed (monorepo) |
 

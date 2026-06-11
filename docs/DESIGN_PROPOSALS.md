@@ -2,11 +2,11 @@
 
 Three visual directions for the ComOt app, shown on the same home screen so they can be compared fairly. **All three are built RTL-first** (Hebrew default) and adapt cleanly to LTR English.
 
-> **Status: awaiting approval.** Pick a direction (or request changes); the chosen direction becomes the design system for the app and is already reflected in the marketing landing page (built with Direction 1, the recommended one).
+> **Status: ✅ APPROVED — Direction 2 "Clean Ledger"** was selected by the product owner (2026-06-11). Direction 2 is now the design system for the app and the marketing landing page. Logo selection is in progress — see [`LOGO_OPTIONS.md`](LOGO_OPTIONS.md).
 
 ---
 
-## Direction 1 — "Warm Community" ⭐ Recommended
+## Direction 1 — "Warm Community"
 
 ![Direction 1 — Warm Community](design/direction-1-warm-community.png)
 
@@ -28,7 +28,7 @@ Three visual directions for the ComOt app, shown on the same home screen so they
 
 ---
 
-## Direction 2 — "Clean Ledger"
+## Direction 2 — "Clean Ledger" ✅ APPROVED
 
 ![Direction 2 — Clean Ledger](design/direction-2-clean-ledger.png)
 
@@ -73,13 +73,13 @@ Three visual directions for the ComOt app, shown on the same home screen so they
 | Hebrew/RTL typography fit | ★★★ | ★★★ | ★★ |
 | Accessibility (contrast, daylight use) | ★★★ | ★★★ | ★★ |
 
-**Recommendation:** ship **Direction 1** as the primary light theme, and adopt Direction 3's palette later as the dark theme. Direction 2's data-card patterns (budget chart card, status pills) are worth borrowing inside the Budget module regardless of direction.
+**Decision:** **Direction 2 — "Clean Ledger" was approved** as the primary design system. Direction 3's palette remains a candidate for a future dark theme.
 
 ---
 
-## What approval unlocks
+## Next steps following approval
 
-Once a direction is approved:
-1. Design tokens (colors, spacing, radii, typography) are codified in the shared UI package.
-2. Core screens are specced in the chosen language: onboarding, home, chat, fault report, budget, events/polls, vendor marketplace, committee settings.
-3. The landing page (already built in Direction 1, see `landing/`) is restyled if a different direction is chosen.
+1. ✅ Landing page (`landing/`) restyled to Direction 2.
+2. ⏳ Logo selection — four options in [`LOGO_OPTIONS.md`](LOGO_OPTIONS.md).
+3. Design tokens (colors, spacing, radii, typography) to be codified in the shared UI package when the app is scaffolded.
+4. Core screens to be specced: onboarding, home, chat, fault report, budget, events/polls, vendor marketplace, committee settings.
