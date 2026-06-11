@@ -14,3 +14,6 @@ create role app_user nologin;
 grant usage on schema public to app_user;
 alter default privileges in schema public grant select, insert, update, delete on tables to app_user;
 alter default privileges in schema public grant execute on functions to app_user;
+-- Supabase grants authenticated users access to auth.uid()
+grant usage on schema auth to app_user;
+grant execute on function auth.uid() to app_user;
