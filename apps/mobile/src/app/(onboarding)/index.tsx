@@ -37,6 +37,12 @@ export default function ChoosePathScreen() {
         <Text style={styles.choiceBody}>{t('onboarding.joinBody')}</Text>
       </Pressable>
 
+      <Pressable style={styles.choice} onPress={() => router.push('/(onboarding)/vendor-signup')}>
+        <Text style={styles.choiceIcon}>🧰</Text>
+        <Text style={styles.choiceTitle}>{t('onboarding.vendorTitle')}</Text>
+        <Text style={styles.choiceBody}>{t('onboarding.vendorBody')}</Text>
+      </Pressable>
+
       <Text style={styles.signOut} onPress={() => signOut()}>
         {t('common.signOut')}
       </Text>

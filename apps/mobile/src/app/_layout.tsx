@@ -8,7 +8,7 @@ import { initI18n } from '@/lib/i18n';
 import { colors } from '@/theme';
 
 function RootNavigator() {
-  const { loading, session, membership } = useAuth();
+  const { loading, session, membership, vendor } = useAuth();
 
   if (loading) {
     return (
@@ -20,7 +20,8 @@ function RootNavigator() {
 
   const signedIn = !!session;
   const isActiveMember = signedIn && membership?.status === 'active';
-  const needsOnboarding = signedIn && !isActiveMember;
+  const isVendor = signedIn && !isActiveMember && !!vendor;
+  const needsOnboarding = signedIn && !isActiveMember && !isVendor;
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
@@ -30,6 +31,9 @@ function RootNavigator() {
       <Stack.Protected guard={needsOnboarding}>
         <Stack.Screen name="(onboarding)" />
       </Stack.Protected>
+      <Stack.Protected guard={isVendor}>
+        <Stack.Screen name="(vendor)" />
+      </Stack.Protected>
       <Stack.Protected guard={isActiveMember}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="tenants" />
@@ -37,6 +41,7 @@ function RootNavigator() {
         <Stack.Screen name="faults" />
         <Stack.Screen name="events" />
         <Stack.Screen name="budget" />
+        <Stack.Screen name="reports" />
       </Stack.Protected>
     </Stack>
   );
