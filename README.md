@@ -31,6 +31,6 @@ Every building is a **fully isolated account** — multi-tenancy is enforced at 
 ## Quick look — landing page
 
 ```bash
-cd landing && python3 -m http.server 8080
+cd apps/landing && python3 -m http.server 8080
 # open http://localhost:8080  (Hebrew by default, EN toggle in the navbar)
 ```

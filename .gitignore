@@ -1,0 +1,9 @@
+node_modules/
+.expo/
+dist/
+web-build/
+.turbo/
+*.log
+.env
+.env.local
+.DS_Store
