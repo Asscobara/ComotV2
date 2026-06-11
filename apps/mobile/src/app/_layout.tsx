@@ -34,9 +34,6 @@ function RootNavigator() {
       <Stack.Protected guard={isVendor}>
         <Stack.Screen name="(vendor)" />
       </Stack.Protected>
-      <Stack.Protected guard={signedIn}>
-        <Stack.Screen name="notifications" />
-      </Stack.Protected>
       <Stack.Protected guard={isActiveMember}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="tenants" />
@@ -45,6 +42,10 @@ function RootNavigator() {
         <Stack.Screen name="events" />
         <Stack.Screen name="budget" />
         <Stack.Screen name="reports" />
+      </Stack.Protected>
+      {/* registered after the home groups so it never becomes the initial screen */}
+      <Stack.Protected guard={signedIn}>
+        <Stack.Screen name="notifications" />
       </Stack.Protected>
     </Stack>
   );
