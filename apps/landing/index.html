@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ComOt — קומות | ניהול הבניין שלכם, במקום אחד</title>
+  <meta name="description" content="קומות (ComOt) — אפליקציה לניהול בניין מגורים: דיירים, צ'אט, תשלומי ועד, תקלות, אסיפות, סקרים ונותני שירות. iOS, Android ו-Web." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=Assistant:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234F46E5'/%3E%3Cg transform='translate(8,8) scale(0.75)'%3E%3Cpolygon points='6,6 58,14 58,24 16,17 16,47 58,40 58,50 6,58' fill='%23FFFFFF'/%3E%3Cpolygon points='24,27 46,29.5 46,36.5 24,37' fill='%23C7D2FE'/%3E%3C/g%3E%3C/svg%3E" />
+  <style>
+    :root {
+      --bg: #FFFFFF;
+      --bg-soft: #F8F9FB;
+      --surface: #FFFFFF;
+      --ink: #0F172A;
+      --ink-soft: #475569;
+      --primary: #4F46E5;
+      --primary-dark: #4338CA;
+      --primary-soft: #EEF2FF;
+      --periwinkle: #C7D2FE;
+      --border: #E2E8F0;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+      --shadow: 0 16px 36px -18px rgba(79, 70, 229, 0.35);
+      --shadow-soft: 0 8px 24px -16px rgba(15, 23, 42, 0.16);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', 'Assistant', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    .container { max-width: 1120px; margin-inline: auto; padding-inline: 24px; }
+
+    /* ---------- Nav ---------- */
+    header {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav { display: flex; align-items: center; justify-content: space-between; padding-block: 14px; gap: 16px; }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 1.35rem; color: var(--ink); text-decoration: none; }
+    .logo svg { flex-shrink: 0; }
+    .logo .logo-sub { font-size: 0.8rem; font-weight: 500; color: var(--ink-soft); margin-inline-start: 2px; }
+    .nav-links { display: flex; align-items: center; gap: 22px; }
+    .nav-links a { color: var(--ink-soft); text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: color .2s; }
+    .nav-links a:hover { color: var(--primary); }
+    .nav-actions { display: flex; align-items: center; gap: 10px; }
+    .lang-toggle {
+      border: 1.5px solid var(--border); background: transparent; color: var(--primary);
+      font-family: inherit; font-weight: 700; font-size: 0.85rem;
+      padding: 7px 14px; border-radius: 999px; cursor: pointer; transition: all .2s;
+    }
+    .lang-toggle:hover { background: var(--primary-soft); border-color: var(--periwinkle); }
+    .btn {
+      display: inline-block; font-family: inherit; font-weight: 700; text-decoration: none; cursor: pointer;
+      border: none; border-radius: var(--radius-sm); transition: transform .15s, box-shadow .2s, background .2s;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { background: var(--primary); color: #fff; padding: 12px 28px; font-size: 1rem; box-shadow: var(--shadow); }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-ghost { background: transparent; color: var(--primary); padding: 12px 22px; font-size: 1rem; border: 1.5px solid var(--periwinkle); }
+    .btn-ghost:hover { background: var(--primary-soft); }
+    .btn-nav { padding: 9px 20px; font-size: 0.9rem; }
+
+    /* ---------- Hero ---------- */
+    .hero { position: relative; padding-block: 72px 90px; }
+    .hero-blob {
+      position: absolute; border-radius: 50%; filter: blur(90px); opacity: .55; pointer-events: none;
+    }
+    .blob-1 { width: 420px; height: 420px; background: var(--primary-soft); top: -120px; inset-inline-end: -120px; }
+    .blob-2 { width: 360px; height: 360px; background: #F1F5F9; bottom: -100px; inset-inline-start: -100px; }
+    .hero-grid { position: relative; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 48px; align-items: center; }
+    .badge-pill {
+      display: inline-flex; align-items: center; gap: 8px; background: var(--primary-soft); color: var(--primary);
+      font-weight: 700; font-size: 0.85rem; padding: 7px 16px; border-radius: 999px; margin-bottom: 22px;
+      border: 1px solid var(--periwinkle);
+    }
+    .badge-pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); }
+    h1 { font-size: clamp(2.3rem, 5vw, 3.6rem); font-weight: 900; line-height: 1.15; letter-spacing: -0.02em; }
+    h1 .accent { color: var(--primary); position: relative; white-space: nowrap; }
+    h1 .accent::after {
+      content: ''; position: absolute; inset-inline: 0; bottom: 4px; height: 12px;
+      background: var(--primary-soft); z-index: -1; border-radius: 6px;
+    }
+    .hero-sub { margin-top: 20px; font-size: 1.15rem; color: var(--ink-soft); max-width: 34em; }
+    .hero-ctas { margin-top: 32px; display: flex; flex-wrap: wrap; gap: 14px; }
+    .store-row { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+    .store-badge {
+      display: inline-flex; align-items: center; gap: 10px; background: var(--ink); color: #fff;
+      border-radius: var(--radius-sm); padding: 9px 18px; text-decoration: none; opacity: .95;
+    }
+    .store-badge small { display: block; font-size: 0.65rem; opacity: .75; line-height: 1.2; }
+    .store-badge strong { display: block; font-size: 0.95rem; line-height: 1.25; }
+    .store-badge.web { background: var(--primary); }
+    .hero-phone { position: relative; display: flex; justify-content: center; }
+    .hero-phone img {
+      width: 100%; max-width: 430px; border-radius: var(--radius-lg);
+      box-shadow: 0 40px 80px -30px rgba(79, 70, 229, 0.4);
+      border: 1px solid var(--border);
+    }
+    .float-card {
+      position: absolute; background: var(--surface); border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-soft); border: 1px solid var(--border);
+      padding: 12px 18px; font-size: 0.85rem; font-weight: 700;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .float-card .ico { font-size: 1.2rem; }
+    .fc-1 { top: 8%; inset-inline-start: -4%; animation: floaty 5s ease-in-out infinite; }
+    .fc-2 { bottom: 10%; inset-inline-end: -2%; animation: floaty 6s ease-in-out 1s infinite; }
+    @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+    /* ---------- Sections ---------- */
+    section { padding-block: 78px; }
+    #features { background: var(--bg-soft); border-block: 1px solid var(--border); }
+    .section-head { text-align: center; max-width: 620px; margin-inline: auto; margin-bottom: 52px; }
+    .kicker { color: var(--primary); font-weight: 800; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.08em; }
+    h2 { font-size: clamp(1.7rem, 3.5vw, 2.4rem); font-weight: 900; margin-top: 8px; line-height: 1.25; letter-spacing: -0.01em; }
+    .section-head p { margin-top: 12px; color: var(--ink-soft); font-size: 1.05rem; }
+
+    /* Features */
+    .features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    .feature-card {
+      background: var(--surface); border-radius: var(--radius-md); padding: 26px 22px;
+      box-shadow: var(--shadow-soft); transition: transform .2s, box-shadow .2s, border-color .2s;
+      border: 1px solid var(--border);
+    }
+    .feature-card:hover { transform: translateY(-5px); box-shadow: var(--shadow); border-color: var(--periwinkle); }
+    .feature-ico {
+      width: 52px; height: 52px; border-radius: var(--radius-sm); display: grid; place-items: center;
+      font-size: 1.5rem; background: var(--primary-soft); border: 1px solid var(--periwinkle); margin-bottom: 16px;
+    }
+    .feature-card h3 { font-size: 1.05rem; font-weight: 800; margin-bottom: 6px; }
+    .feature-card p { font-size: 0.9rem; color: var(--ink-soft); line-height: 1.55; }
+
+    /* Flow / scenario */
+    .flow {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-radius: var(--radius-lg); padding: 64px 48px; color: #fff; position: relative; overflow: hidden;
+    }
+    .flow::before {
+      content: ''; position: absolute; width: 480px; height: 480px; border-radius: 50%;
+      background: rgba(255,255,255,0.06); top: -200px; inset-inline-end: -150px;
+    }
+    .flow .kicker { color: var(--periwinkle); }
+    .flow h2 { color: #fff; }
+    .flow .section-head p { color: rgba(255,255,255,0.8); }
+    .steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 18px; position: relative; }
+    .step { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.16); border-radius: var(--radius-md); padding: 22px 18px; }
+    .step-num {
+      width: 36px; height: 36px; border-radius: 50%; background: #fff; color: var(--primary);
+      font-weight: 900; display: grid; place-items: center; margin-bottom: 14px; font-size: 1rem;
+    }
+    .step h3 { font-size: 0.98rem; font-weight: 800; margin-bottom: 6px; }
+    .step p { font-size: 0.84rem; color: rgba(255,255,255,0.78); line-height: 1.5; }
+
+    /* Split sections (committee / vendors / isolation) */
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+    .split + .split { margin-top: 84px; }
+    .split h2 { margin-bottom: 14px; }
+    .split p.lead { color: var(--ink-soft); font-size: 1.05rem; margin-bottom: 22px; }
+    .check-list { list-style: none; display: grid; gap: 14px; }
+    .check-list li { display: flex; gap: 12px; align-items: flex-start; font-weight: 500; }
+    .check-list .chk {
+      flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%; background: var(--primary-soft);
+      color: var(--primary); border: 1px solid var(--periwinkle);
+      display: grid; place-items: center; font-size: 0.85rem; font-weight: 900; margin-top: 2px;
+    }
+    .panel {
+      background: var(--bg-soft); border-radius: var(--radius-lg); box-shadow: var(--shadow-soft);
+      padding: 36px; border: 1px solid var(--border);
+    }
+    .panel .big-emoji { font-size: 3rem; margin-bottom: 14px; display: block; }
+    .panel h3 { font-size: 1.25rem; font-weight: 800; margin-bottom: 8px; }
+    .panel p { color: var(--ink-soft); font-size: 0.95rem; }
+    .panel .tag-row { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag {
+      background: var(--primary-soft); color: var(--primary); border: 1px solid var(--periwinkle);
+      font-size: 0.8rem; font-weight: 700; padding: 5px 12px; border-radius: 999px;
+    }
+    .tag.alt { background: #FFF7ED; color: #C2410C; border-color: #FED7AA; }
+
+    /* CTA / waitlist */
+    .cta-band {
+      background: linear-gradient(135deg, var(--primary-soft), #fff);
+      border-radius: var(--radius-lg); padding: 64px 48px; text-align: center;
+      border: 1px solid var(--periwinkle);
+    }
+    .cta-band h2 { margin-bottom: 10px; }
+    .cta-band p { color: var(--ink-soft); max-width: 36em; margin-inline: auto; }
+    .waitlist-form { margin-top: 28px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .waitlist-form input {
+      font-family: inherit; font-size: 1rem; padding: 13px 20px; border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border); min-width: 280px; background: #fff; color: var(--ink);
+    }
+    .waitlist-form input:focus { outline: 2px solid var(--primary); border-color: transparent; }
+    .form-success { display: none; margin-top: 20px; color: var(--primary); font-weight: 800; font-size: 1.05rem; }
+
+    /* Footer */
+    footer { border-top: 1px solid var(--border); padding-block: 36px; background: var(--bg-soft); }
+    .footer-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; color: var(--ink-soft); font-size: 0.9rem; }
+    .footer-row .logo { font-size: 1.1rem; }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 980px) {
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .steps { grid-template-columns: repeat(2, 1fr); }
+      .hero-grid, .split { grid-template-columns: 1fr; }
+      .split.reverse .split-media { order: -1; }
+      .nav-links { display: none; }
+      .fc-1 { inset-inline-start: 2%; }
+      .fc-2 { inset-inline-end: 2%; }
+    }
+    @media (max-width: 560px) {
+      .features-grid, .steps { grid-template-columns: 1fr; }
+      .flow, .cta-band { padding: 44px 24px; }
+      section { padding-block: 56px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container nav">
+      <a class="logo" href="#">
+        <svg width="34" height="34" viewBox="0 0 64 64" aria-hidden="true">
+          <polygon points="6,6 58,14 58,24 16,17 16,47 58,40 58,50 6,58" fill="#4F46E5"/>
+          <polygon points="24,27 46,29.5 46,36.5 24,37" fill="#818CF8"/>
+        </svg>
+        <span>ComOt <span class="logo-sub" data-i18n="logo_sub">קומות</span></span>
+      </a>
+      <nav class="nav-links">
+        <a href="#features" data-i18n="nav_features">יכולות</a>
+        <a href="#how" data-i18n="nav_how">איך זה עובד</a>
+        <a href="#committee" data-i18n="nav_committee">לוועד הבית</a>
+        <a href="#vendors" data-i18n="nav_vendors">לנותני שירות</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="lang-toggle" id="langToggle" aria-label="Switch language">EN</button>
+        <a class="btn btn-ghost btn-nav" href="./app/" data-i18n="nav_app">כניסה לאפליקציה</a>
+        <a class="btn btn-primary btn-nav" href="#waitlist" data-i18n="nav_cta">הצטרפו עכשיו</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="hero-blob blob-1"></div>
+    <div class="hero-blob blob-2"></div>
+    <div class="container hero-grid">
+      <div>
+        <span class="badge-pill"><span class="dot"></span><span data-i18n="hero_badge">בקרוב ל-iOS, Android ו-Web</span></span>
+        <h1><span data-i18n="hero_title_1">ניהול הבניין שלכם.</span> <span class="accent" data-i18n="hero_title_2">במקום אחד.</span></h1>
+        <p class="hero-sub" data-i18n="hero_sub">קומות מחברת בין הדיירים, ועד הבית ונותני השירות — צ'אט פנימי, תשלומי ועד, דיווח תקלות, אסיפות וסקרים, תקציב ודוחות. הכל באפליקציה אחת פשוטה ומאובטחת.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="#waitlist" data-i18n="hero_cta_main">הצטרפו לרשימת ההמתנה</a>
+          <a class="btn btn-ghost" href="#vendors" data-i18n="hero_cta_vendor">אני נותן שירות</a>
+        </div>
+        <div class="store-row">
+          <a class="store-badge" href="#waitlist"><span style="font-size:1.4rem"></span><span><small data-i18n="store_soon_1">בקרוב ב-</small><strong>App Store</strong></span></a>
+          <a class="store-badge" href="#waitlist"><span style="font-size:1.3rem">▶</span><span><small data-i18n="store_soon_2">בקרוב ב-</small><strong>Google Play</strong></span></a>
+          <a class="store-badge web" href="#waitlist"><span style="font-size:1.3rem">🌐</span><span><small data-i18n="store_soon_3">וגם בדפדפן</small><strong>Chrome</strong></span></a>
+        </div>
+      </div>
+      <div class="hero-phone">
+        <img src="assets/app-mockup.png" alt="ComOt app" />
+        <div class="float-card fc-1"><span class="ico">💬</span><span data-i18n="float_1">הודעה חדשה בערוץ הבניין</span></div>
+        <div class="float-card fc-2"><span class="ico">✅</span><span data-i18n="float_2">התקלה טופלה!</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FEATURES ============ -->
+  <section id="features">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker" data-i18n="features_kicker">כל מה שבניין צריך</span>
+        <h2 data-i18n="features_title">שמונה יכולות. אפס כאב ראש.</h2>
+        <p data-i18n="features_sub">כל הכלים שוועד בית ודיירים צריכים כדי לנהל בניין מגורים — בלי קבוצות וואטסאפ מבולגנות ובלי אקסלים.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-ico">👥</div>
+          <h3 data-i18n="f1_t">ניהול דיירים</h3>
+          <p data-i18n="f1_d">הוספה, עריכה ואישור דיירים — בעלי דירות ושוכרים, כולל פרטי קשר. הרשמה דרך רשתות חברתיות באישור הוועד.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-ico">💬</div>
+          <h3 data-i18n="f2_t">צ'אט פנימי</h3>
+          <p data-i18n="f2_d">ערוצים ציבוריים לכל הבניין והודעות פרטיות בין דיירים — בזמן אמת, רק לדיירי הבניין שלכם.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-ico">📅</div>
+          <h3 data-i18n="f3_t">ניהול אירועים</h3>
+          <p data-i18n="f3_d">אירועים קבועים כמו תשלום ועד חודשי, ואירועים חד־פעמיים כמו פיצוץ צינור או אסיפת דיירים — הכל ביומן אחד.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-ico">🗳️</div>
+          <h3 data-i18n="f4_t">אסיפות וסקרים</h3>
+          <p data-i18n="f4_d">חדר דיון וירטואלי לאסיפות ועד, עם סקרים חיים לקבלת החלטות שקופה ומהירה.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-ico">💰</div>
+          <h3 data-i18n="f5_t">ניהול תקציב</h3>
+          <p data-i18n="f5_d">מגביית ועד ועד גינון, חשמל ותחזוקת מעלית — מעקב מלא אחר הכנסות, הוצאות והתראת גירעון אוטומטית.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-ico">🛠️</div>
+          <h3 data-i18n="f6_t">נותני שירות</h3>
+          <p data-i18n="f6_d">גנן, אינסטלטור, טכנאי מעליות ועוד — איתור אוטומטי של בעל המקצוע המתאים לפי סוג התקלה, מיקום ותקציב.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-ico">🔔</div>
+          <h3 data-i18n="f7_t">התראות חכמות</h3>
+          <p data-i18n="f7_d">תזכורות תשלום לדיירים, התראת גירעון לוועד ועדכוני סטטוס על תקלות — בדיוק בזמן הנכון.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-ico">📊</div>
+          <h3 data-i18n="f8_t">דוחות</h3>
+          <p data-i18n="f8_d">דוחות הוצאות, הכנסות ונותני שירות זמינים — מוכנים להורדה ולשיתוף בלחיצה אחת.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HOW IT WORKS ============ -->
+  <section id="how">
+    <div class="container">
+      <div class="flow">
+        <div class="section-head">
+          <span class="kicker" data-i18n="how_kicker">תרחיש אמיתי</span>
+          <h2 data-i18n="how_title">מתקלה לפתרון — בלי טלפונים ובלי בלגן</h2>
+          <p data-i18n="how_sub">כך קומות מטפלת בתקלה בבניין, מהדיווח ועד הסגירה.</p>
+        </div>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <h3 data-i18n="s1_t">דיווח תקלה</h3>
+            <p data-i18n="s1_d">דייר מצלם ומדווח על התקלה ישירות מהאפליקציה.</p>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <h3 data-i18n="s2_t">איתור בעל מקצוע</h3>
+            <p data-i18n="s2_d">המערכת מאתרת נותן שירות מתאים לפי תחום, מיקום והתאמה לתקציב.</p>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <h3 data-i18n="s3_t">בדיקת תקציב</h3>
+            <p data-i18n="s3_d">אין מספיק תקציב? הוועד מקבל התראה ויכול לפתוח סקר דיירים.</p>
+          </div>
+          <div class="step">
+            <div class="step-num">4</div>
+            <h3 data-i18n="s4_t">גבייה והזמנה</h3>
+            <p data-i18n="s4_d">הדיירים אישרו? נפתחת גבייה ייעודית ובעל המקצוע מוזמן.</p>
+          </div>
+          <div class="step">
+            <div class="step-num">5</div>
+            <h3 data-i18n="s5_t">מעקב עד סגירה</h3>
+            <p data-i18n="s5_d">סטטוס הטיפול מתעדכן בשקיפות מלאה — עד שהתקלה נסגרת.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COMMITTEE + ISOLATION ============ -->
+  <section id="committee">
+    <div class="container">
+      <div class="split">
+        <div>
+          <span class="kicker" data-i18n="com_kicker">לוועד הבית</span>
+          <h2 data-i18n="com_title">הוועד שולט בהכל. הדיירים רואים הכל.</h2>
+          <p class="lead" data-i18n="com_sub">ועד הבית מקים את הבניין באפליקציה ומגדיר את כל מה שחשוב:</p>
+          <ul class="check-list">
+            <li><span class="chk">✓</span><span data-i18n="com_li1">סכום דמי הוועד, מועד החיוב והתדירות</span></li>
+            <li><span class="chk">✓</span><span data-i18n="com_li2">מתי ואיך נשלחות התראות לדיירים</span></li>
+            <li><span class="chk">✓</span><span data-i18n="com_li3">אישור דיירים חדשים שנרשמו לבניין</span></li>
+            <li><span class="chk">✓</span><span data-i18n="com_li4">העברת תפקיד מסודרת — חבר הוועד היוצא בוחר מחליף, והתפקיד עובר רק לאחר אישור מפורש</span></li>
+          </ul>
+        </div>
+        <div class="split-media">
+          <div class="panel">
+            <span class="big-emoji">🔒</span>
+            <h3 data-i18n="iso_t">כל בניין הוא עולם סגור</h3>
+            <p data-i18n="iso_d">לכל בניין חשבון נפרד לחלוטין. דיירים לא יכולים לראות שום מידע של בניינים אחרים — הנתונים, הצ'אט והתקציב שלכם נשארים רק אצלכם.</p>
+            <div class="tag-row">
+              <span class="tag" data-i18n="iso_tag1">בידוד מלא בין בניינים</span>
+              <span class="tag" data-i18n="iso_tag2">אבטחה ברמת בסיס הנתונים</span>
+              <span class="tag alt" data-i18n="iso_tag3">עברית + English</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vendors -->
+      <div class="split reverse" id="vendors">
+        <div class="split-media">
+          <div class="panel">
+            <span class="big-emoji">🧰</span>
+            <h3 data-i18n="ven_panel_t">נותני שירות — ההרשמה חינם</h3>
+            <p data-i18n="ven_panel_d">פרסמו את תחום ההתמחות, אזור השירות ופרטי הקשר שלכם — וקבלו פניות מבניינים באזורכם בדיוק כשהם צריכים אתכם.</p>
+            <div class="tag-row">
+              <span class="tag" data-i18n="ven_tag1">אינסטלציה</span>
+              <span class="tag" data-i18n="ven_tag2">גינון</span>
+              <span class="tag" data-i18n="ven_tag3">מעליות</span>
+              <span class="tag" data-i18n="ven_tag4">חשמל</span>
+              <span class="tag" data-i18n="ven_tag5">איטום גגות</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <span class="kicker" data-i18n="ven_kicker">לבעלי מקצוע</span>
+          <h2 data-i18n="ven_title">העבודה הבאה שלכם כבר מחכה בבניין הסמוך</h2>
+          <p class="lead" data-i18n="ven_sub">קומות מחברת אתכם ישירות לבניינים שצריכים אתכם — בלי מתווכים.</p>
+          <ul class="check-list">
+            <li><span class="chk">✓</span><span data-i18n="ven_li1">הרשמה חינם בשלב הראשון</span></li>
+            <li><span class="chk">✓</span><span data-i18n="ven_li2">התאמה אוטומטית לתקלות לפי תחום ומיקום</span></li>
+            <li><span class="chk">✓</span><span data-i18n="ven_li3">בהמשך: מנוי חודשי עם עדיפות בהתאמות</span></li>
+          </ul>
+          <div style="margin-top: 26px;">
+            <a class="btn btn-primary" href="#waitlist" data-i18n="ven_cta">הצטרפו כנותני שירות</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WAITLIST ============ -->
+  <section id="waitlist">
+    <div class="container">
+      <div class="cta-band">
+        <span class="kicker" data-i18n="wl_kicker">משיקים בקרוב</span>
+        <h2 data-i18n="wl_title">הבניין שלכם ראוי לניהול טוב יותר</h2>
+        <p data-i18n="wl_sub">השאירו כתובת אימייל ונעדכן אתכם ברגע שקומות זמינה להורדה — לוועדי בתים, לדיירים ולנותני שירות.</p>
+        <form class="waitlist-form" id="waitlistForm">
+          <input type="email" id="waitlistEmail" required data-i18n-placeholder="wl_placeholder" placeholder="האימייל שלכם" />
+          <button type="submit" class="btn btn-primary" data-i18n="wl_btn">עדכנו אותי</button>
+        </form>
+        <div class="form-success" id="formSuccess" data-i18n="wl_success">תודה! נעדכן אתכם ברגע שנשיק 🎉</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container footer-row">
+      <a class="logo" href="#">
+        <svg width="26" height="26" viewBox="0 0 64 64" aria-hidden="true">
+          <polygon points="6,6 58,14 58,24 16,17 16,47 58,40 58,50 6,58" fill="#4F46E5"/>
+          <polygon points="24,27 46,29.5 46,36.5 24,37" fill="#818CF8"/>
+        </svg>
+        <span>ComOt</span>
+      </a>
+      <span data-i18n="footer_tag">קומות — ניהול בניין מגורים. iOS · Android · Web</span>
+      <span>© 2026 ComOt</span>
+    </div>
+  </footer>
+
+  <script>
+    const translations = {
+      he: {
+        _dir: 'rtl',
+        _title: 'ComOt — קומות | ניהול הבניין שלכם, במקום אחד',
+        logo_sub: 'קומות',
+        nav_features: 'יכולות', nav_how: 'איך זה עובד', nav_committee: 'לוועד הבית', nav_vendors: 'לנותני שירות', nav_cta: 'הצטרפו עכשיו', nav_app: 'כניסה לאפליקציה',
+        hero_badge: 'בקרוב ל-iOS, Android ו-Web',
+        hero_title_1: 'ניהול הבניין שלכם.', hero_title_2: 'במקום אחד.',
+        hero_sub: "קומות מחברת בין הדיירים, ועד הבית ונותני השירות — צ'אט פנימי, תשלומי ועד, דיווח תקלות, אסיפות וסקרים, תקציב ודוחות. הכל באפליקציה אחת פשוטה ומאובטחת.",
+        hero_cta_main: 'הצטרפו לרשימת ההמתנה', hero_cta_vendor: 'אני נותן שירות',
+        store_soon_1: 'בקרוב ב-', store_soon_2: 'בקרוב ב-', store_soon_3: 'וגם בדפדפן',
+        float_1: 'הודעה חדשה בערוץ הבניין', float_2: 'התקלה טופלה!',
+        features_kicker: 'כל מה שבניין צריך', features_title: 'שמונה יכולות. אפס כאב ראש.',
+        features_sub: 'כל הכלים שוועד בית ודיירים צריכים כדי לנהל בניין מגורים — בלי קבוצות וואטסאפ מבולגנות ובלי אקסלים.',
+        f1_t: 'ניהול דיירים', f1_d: 'הוספה, עריכה ואישור דיירים — בעלי דירות ושוכרים, כולל פרטי קשר. הרשמה דרך רשתות חברתיות באישור הוועד.',
+        f2_t: "צ'אט פנימי", f2_d: 'ערוצים ציבוריים לכל הבניין והודעות פרטיות בין דיירים — בזמן אמת, רק לדיירי הבניין שלכם.',
+        f3_t: 'ניהול אירועים', f3_d: 'אירועים קבועים כמו תשלום ועד חודשי, ואירועים חד־פעמיים כמו פיצוץ צינור או אסיפת דיירים — הכל ביומן אחד.',
+        f4_t: 'אסיפות וסקרים', f4_d: 'חדר דיון וירטואלי לאסיפות ועד, עם סקרים חיים לקבלת החלטות שקופה ומהירה.',
+        f5_t: 'ניהול תקציב', f5_d: 'מגביית ועד ועד גינון, חשמל ותחזוקת מעלית — מעקב מלא אחר הכנסות, הוצאות והתראת גירעון אוטומטית.',
+        f6_t: 'נותני שירות', f6_d: 'גנן, אינסטלטור, טכנאי מעליות ועוד — איתור אוטומטי של בעל המקצוע המתאים לפי סוג התקלה, מיקום ותקציב.',
+        f7_t: 'התראות חכמות', f7_d: 'תזכורות תשלום לדיירים, התראת גירעון לוועד ועדכוני סטטוס על תקלות — בדיוק בזמן הנכון.',
+        f8_t: 'דוחות', f8_d: 'דוחות הוצאות, הכנסות ונותני שירות זמינים — מוכנים להורדה ולשיתוף בלחיצה אחת.',
+        how_kicker: 'תרחיש אמיתי', how_title: 'מתקלה לפתרון — בלי טלפונים ובלי בלגן', how_sub: 'כך קומות מטפלת בתקלה בבניין, מהדיווח ועד הסגירה.',
+        s1_t: 'דיווח תקלה', s1_d: 'דייר מצלם ומדווח על התקלה ישירות מהאפליקציה.',
+        s2_t: 'איתור בעל מקצוע', s2_d: 'המערכת מאתרת נותן שירות מתאים לפי תחום, מיקום והתאמה לתקציב.',
+        s3_t: 'בדיקת תקציב', s3_d: 'אין מספיק תקציב? הוועד מקבל התראה ויכול לפתוח סקר דיירים.',
+        s4_t: 'גבייה והזמנה', s4_d: 'הדיירים אישרו? נפתחת גבייה ייעודית ובעל המקצוע מוזמן.',
+        s5_t: 'מעקב עד סגירה', s5_d: 'סטטוס הטיפול מתעדכן בשקיפות מלאה — עד שהתקלה נסגרת.',
+        com_kicker: 'לוועד הבית', com_title: 'הוועד שולט בהכל. הדיירים רואים הכל.',
+        com_sub: 'ועד הבית מקים את הבניין באפליקציה ומגדיר את כל מה שחשוב:',
+        com_li1: 'סכום דמי הוועד, מועד החיוב והתדירות',
+        com_li2: 'מתי ואיך נשלחות התראות לדיירים',
+        com_li3: 'אישור דיירים חדשים שנרשמו לבניין',
+        com_li4: 'העברת תפקיד מסודרת — חבר הוועד היוצא בוחר מחליף, והתפקיד עובר רק לאחר אישור מפורש',
+        iso_t: 'כל בניין הוא עולם סגור',
+        iso_d: "לכל בניין חשבון נפרד לחלוטין. דיירים לא יכולים לראות שום מידע של בניינים אחרים — הנתונים, הצ'אט והתקציב שלכם נשארים רק אצלכם.",
+        iso_tag1: 'בידוד מלא בין בניינים', iso_tag2: 'אבטחה ברמת בסיס הנתונים', iso_tag3: 'עברית + English',
+        ven_panel_t: 'נותני שירות — ההרשמה חינם',
+        ven_panel_d: 'פרסמו את תחום ההתמחות, אזור השירות ופרטי הקשר שלכם — וקבלו פניות מבניינים באזורכם בדיוק כשהם צריכים אתכם.',
+        ven_tag1: 'אינסטלציה', ven_tag2: 'גינון', ven_tag3: 'מעליות', ven_tag4: 'חשמל', ven_tag5: 'איטום גגות',
+        ven_kicker: 'לבעלי מקצוע', ven_title: 'העבודה הבאה שלכם כבר מחכה בבניין הסמוך',
+        ven_sub: 'קומות מחברת אתכם ישירות לבניינים שצריכים אתכם — בלי מתווכים.',
+        ven_li1: 'הרשמה חינם בשלב הראשון',
+        ven_li2: 'התאמה אוטומטית לתקלות לפי תחום ומיקום',
+        ven_li3: 'בהמשך: מנוי חודשי עם עדיפות בהתאמות',
+        ven_cta: 'הצטרפו כנותני שירות',
+        wl_kicker: 'משיקים בקרוב', wl_title: 'הבניין שלכם ראוי לניהול טוב יותר',
+        wl_sub: 'השאירו כתובת אימייל ונעדכן אתכם ברגע שקומות זמינה להורדה — לוועדי בתים, לדיירים ולנותני שירות.',
+        wl_placeholder: 'האימייל שלכם', wl_btn: 'עדכנו אותי', wl_success: 'תודה! נעדכן אתכם ברגע שנשיק 🎉',
+        footer_tag: 'קומות — ניהול בניין מגורים. iOS · Android · Web'
+      },
+      en: {
+        _dir: 'ltr',
+        _title: 'ComOt | Your building, managed in one place',
+        logo_sub: 'Komot',
+        nav_features: 'Features', nav_how: 'How it works', nav_committee: 'For committees', nav_vendors: 'For vendors', nav_cta: 'Join now', nav_app: 'Open the app',
+        hero_badge: 'Coming soon to iOS, Android & Web',
+        hero_title_1: 'Your building.', hero_title_2: 'Managed in one place.',
+        hero_sub: 'ComOt connects tenants, the house committee and service providers — internal chat, committee fees, fault reporting, meetings and polls, budget and reports. All in one simple, secure app.',
+        hero_cta_main: 'Join the waitlist', hero_cta_vendor: "I'm a service provider",
+        store_soon_1: 'Soon on the', store_soon_2: 'Soon on', store_soon_3: 'Also in your browser',
+        float_1: 'New message in the building channel', float_2: 'Issue resolved!',
+        features_kicker: 'Everything a building needs', features_title: 'Eight features. Zero headaches.',
+        features_sub: 'All the tools committees and tenants need to run a residential building — no messy WhatsApp groups, no spreadsheets.',
+        f1_t: 'Tenant management', f1_d: 'Add, edit and approve tenants — owners and renters, with full contact details. Social sign-up, approved by the committee.',
+        f2_t: 'Internal chat', f2_d: 'Public building channels and private messages between tenants — realtime, visible only to your building.',
+        f3_t: 'Event management', f3_d: 'Routine events like monthly committee fees, and ad-hoc ones like a burst pipe or a tenants meeting — all in one calendar.',
+        f4_t: 'Meetings & polls', f4_d: 'A virtual meeting room for committee meetings, with live polls for fast, transparent decisions.',
+        f5_t: 'Budget management', f5_d: 'From fee collection to gardening, electricity and elevator maintenance — full income & expense tracking with automatic deficit alerts.',
+        f6_t: 'Service providers', f6_d: 'Gardener, plumber, elevator technician and more — automatic matching by fault type, location and budget.',
+        f7_t: 'Smart notifications', f7_d: 'Payment reminders for tenants, deficit alerts for the committee and fault status updates — right on time.',
+        f8_t: 'Reports', f8_d: 'Expense, income and available-vendor reports — ready to download and share in one tap.',
+        how_kicker: 'A real scenario', how_title: 'From fault to fix — no phone calls, no chaos', how_sub: 'How ComOt handles a building fault, from report to resolution.',
+        s1_t: 'Report a fault', s1_d: 'A tenant snaps a photo and reports the issue right from the app.',
+        s2_t: 'Find a professional', s2_d: 'The system matches a provider by expertise, location and budget fit.',
+        s3_t: 'Budget check', s3_d: 'Not enough budget? The committee is alerted and can open a tenant poll.',
+        s4_t: 'Collect & book', s4_d: 'Tenants approved? A dedicated collection opens and the provider is booked.',
+        s5_t: 'Track to closure', s5_d: 'The status updates transparently — until the fault is closed.',
+        com_kicker: 'For the house committee', com_title: 'The committee controls everything. Tenants see everything.',
+        com_sub: 'The committee sets up the building in the app and configures what matters:',
+        com_li1: 'Committee fee amount, due date and frequency',
+        com_li2: 'When and how tenants receive notifications',
+        com_li3: 'Approval of new tenants who registered to the building',
+        com_li4: 'Orderly handover — the outgoing member picks a successor, and the role transfers only after explicit confirmation',
+        iso_t: 'Every building is a closed world',
+        iso_d: 'Each building runs under a completely separate account. Tenants can never see data from other buildings — your data, chat and budget stay yours.',
+        iso_tag1: 'Full isolation between buildings', iso_tag2: 'Database-level security', iso_tag3: 'עברית + English',
+        ven_panel_t: 'Service providers — free to join',
+        ven_panel_d: 'Publish your expertise, service area and contact details — and get requests from buildings near you, right when they need you.',
+        ven_tag1: 'Plumbing', ven_tag2: 'Gardening', ven_tag3: 'Elevators', ven_tag4: 'Electricity', ven_tag5: 'Roof sealing',
+        ven_kicker: 'For professionals', ven_title: 'Your next job is waiting in the building next door',
+        ven_sub: 'ComOt connects you directly to buildings that need you — no middlemen.',
+        ven_li1: 'Free registration in the first phase',
+        ven_li2: 'Automatic matching to faults by expertise and location',
+        ven_li3: 'Later: monthly subscription with priority matching',
+        ven_cta: 'Join as a provider',
+        wl_kicker: 'Launching soon', wl_title: 'Your building deserves better management',
+        wl_sub: "Leave your email and we'll let you know the moment ComOt is available — for committees, tenants and service providers.",
+        wl_placeholder: 'Your email', wl_btn: 'Notify me', wl_success: "Thanks! We'll be in touch at launch 🎉",
+        footer_tag: 'ComOt — residential building management. iOS · Android · Web'
+      }
+    };
+
+    let lang = localStorage.getItem('comot-lang') || 'he';
+
+    function applyLang(l) {
+      lang = l;
+      localStorage.setItem('comot-lang', l);
+      const t = translations[l];
+      document.documentElement.lang = l;
+      document.documentElement.dir = t._dir;
+      document.title = t._title;
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (t[key] !== undefined) el.textContent = t[key];
+      });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (t[key] !== undefined) el.placeholder = t[key];
+      });
+      document.getElementById('langToggle').textContent = l === 'he' ? 'EN' : 'עב';
+    }
+
+    document.getElementById('langToggle').addEventListener('click', () => {
+      applyLang(lang === 'he' ? 'en' : 'he');
+    });
+
+    // TODO: wire to a real waitlist backend (e.g. Formspree / Supabase table) before launch.
+    document.getElementById('waitlistForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      document.getElementById('waitlistForm').style.display = 'none';
+      document.getElementById('formSuccess').style.display = 'block';
+    });
+
+    applyLang(lang);
+  </script>
+</body>
+</html>

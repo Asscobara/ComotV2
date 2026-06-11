@@ -1,0 +1,60 @@
+import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, View } from 'react-native';
+
+import { AuthProvider, useAuth } from '@/lib/auth';
+import { initI18n } from '@/lib/i18n';
+import { colors } from '@/theme';
+
+function RootNavigator() {
+  const { loading, session, membership } = useAuth();
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bgSoft }}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
+  const signedIn = !!session;
+  const isActiveMember = signedIn && membership?.status === 'active';
+  const needsOnboarding = signedIn && !isActiveMember;
+
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Protected guard={!signedIn}>
+        <Stack.Screen name="(auth)" />
+      </Stack.Protected>
+      <Stack.Protected guard={needsOnboarding}>
+        <Stack.Screen name="(onboarding)" />
+      </Stack.Protected>
+      <Stack.Protected guard={isActiveMember}>
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="tenants" />
+        <Stack.Screen name="chat" />
+        <Stack.Screen name="faults" />
+      </Stack.Protected>
+    </Stack>
+  );
+}
+
+export default function RootLayout() {
+  const [i18nReady, setI18nReady] = useState(false);
+
+  useEffect(() => {
+    initI18n().then(() => setI18nReady(true));
+  }, []);
+
+  if (!i18nReady) {
+    return <View style={{ flex: 1, backgroundColor: colors.bgSoft }} />;
+  }
+
+  return (
+    <AuthProvider>
+      <StatusBar style="dark" />
+      <RootNavigator />
+    </AuthProvider>
+  );
+}
