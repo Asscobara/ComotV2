@@ -283,3 +283,27 @@ export interface VendorMatch {
   in_book: boolean;
   preferred: boolean;
 }
+
+// ---------- Notifications (Phase 4) ----------
+
+export type NotificationKind =
+  | 'member_pending'
+  | 'member_approved'
+  | 'member_rejected'
+  | 'fault_reported'
+  | 'fault_status'
+  | 'handover_request'
+  | 'poll_opened'
+  | 'booking_new'
+  | 'booking_response'
+  | 'fee_due';
+
+export interface AppNotification {
+  id: string;
+  user_id: string;
+  building_id: string | null;
+  kind: NotificationKind;
+  payload: Record<string, string | number | null>;
+  read_at: string | null;
+  created_at: string;
+}

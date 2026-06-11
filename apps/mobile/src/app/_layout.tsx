@@ -34,6 +34,9 @@ function RootNavigator() {
       <Stack.Protected guard={isVendor}>
         <Stack.Screen name="(vendor)" />
       </Stack.Protected>
+      <Stack.Protected guard={signedIn}>
+        <Stack.Screen name="notifications" />
+      </Stack.Protected>
       <Stack.Protected guard={isActiveMember}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="tenants" />

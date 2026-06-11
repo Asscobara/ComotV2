@@ -8,6 +8,7 @@ import { PollCard } from '@/components/poll-card';
 import { Button, Card, Screen, SectionTitle, Tag } from '@/components/ui';
 import { useAuth } from '@/lib/auth';
 import { deleteEvent, fetchEvent, fetchPollsForEvent } from '@/lib/events';
+import { getOrCreateEventChannel } from '@/lib/notifications';
 import { spacing, typography } from '@/theme';
 
 const EVENT_GLYPHS: Record<BuildingEvent['kind'], string> = {
@@ -104,6 +105,21 @@ export default function EventDetailScreen() {
           </Text>
         ) : null}
         {event.description ? <Text style={styles.description}>{event.description}</Text> : null}
+        <View style={{ height: spacing.md }} />
+        <Button
+          title={`💬 ${t('events.discussion')}`}
+          variant="soft"
+          onPress={async () => {
+            try {
+              const conversationId = await getOrCreateEventChannel(id);
+              router.push({ pathname: '/chat/[id]', params: { id: conversationId } });
+            } catch (e) {
+              const msg = e instanceof Error ? e.message : t('common.error');
+              if (Platform.OS === 'web') window.alert(msg);
+              else Alert.alert(msg);
+            }
+          }}
+        />
       </Card>
 
       <SectionTitle>{t('events.polls')}</SectionTitle>

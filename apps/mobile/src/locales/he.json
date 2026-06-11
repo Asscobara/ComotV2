@@ -183,7 +183,8 @@
     "empty": "אין אירועים מתוכננים",
     "delete": "מחיקת האירוע",
     "deleteConfirm": "למחוק את האירוע?",
-    "polls": "סקרים"
+    "polls": "סקרים",
+    "discussion": "חדר דיון וירטואלי"
   },
   "polls": {
     "title": "סקרים",
@@ -277,6 +278,22 @@
     "exportCsv": "ייצוא CSV",
     "exported": "הדוח הועתק/שותף",
     "noData": "אין נתונים עדיין"
+  },
+  "notifications": {
+    "title": "התראות",
+    "empty": "אין התראות",
+    "markAll": "סימון הכל כנקרא",
+    "n_member_pending": "{{full_name}} ממתין/ה לאישור הצטרפות",
+    "n_member_approved": "התקבלתם לבניין {{building_name}} 🎉",
+    "n_member_rejected": "הבקשה להצטרף ל{{building_name}} נדחתה",
+    "n_fault_reported": "תקלה חדשה: {{title}}",
+    "n_fault_status": "עדכון תקלה „{{title}}\": {{status}}",
+    "n_handover_request": "{{from_name}} מציע/ה לכם את ניהול {{building_name}}",
+    "n_poll_opened": "סקר חדש: {{question}}",
+    "n_booking_new": "עבודה חדשה: {{title}} · {{city}}",
+    "n_booking_accepted": "{{vendor_name}} אישר/ה את העבודה „{{title}}\"",
+    "n_booking_declined": "{{vendor_name}} דחה/תה את העבודה „{{title}}\"",
+    "n_fee_due": "תזכורת: דמי ועד {{period}} — ₪{{amount}}"
   },
   "more": {
     "title": "עוד",

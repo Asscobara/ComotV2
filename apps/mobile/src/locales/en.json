@@ -183,7 +183,8 @@
     "empty": "No events planned",
     "delete": "Delete event",
     "deleteConfirm": "Delete this event?",
-    "polls": "Polls"
+    "polls": "Polls",
+    "discussion": "Virtual meeting room"
   },
   "polls": {
     "title": "Polls",
@@ -277,6 +278,22 @@
     "exportCsv": "Export CSV",
     "exported": "Report copied/shared",
     "noData": "No data yet"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications",
+    "markAll": "Mark all as read",
+    "n_member_pending": "{{full_name}} is waiting for join approval",
+    "n_member_approved": "You were approved to {{building_name}} 🎉",
+    "n_member_rejected": "Your request to join {{building_name}} was declined",
+    "n_fault_reported": "New issue: {{title}}",
+    "n_fault_status": "Issue \"{{title}}\" update: {{status}}",
+    "n_handover_request": "{{from_name}} offered you the committee role of {{building_name}}",
+    "n_poll_opened": "New poll: {{question}}",
+    "n_booking_new": "New job: {{title}} · {{city}}",
+    "n_booking_accepted": "{{vendor_name}} accepted the job \"{{title}}\"",
+    "n_booking_declined": "{{vendor_name}} declined the job \"{{title}}\"",
+    "n_fee_due": "Reminder: committee fee {{period}} — ₪{{amount}}"
   },
   "more": {
     "title": "More",
