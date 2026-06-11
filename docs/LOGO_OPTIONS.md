@@ -2,7 +2,7 @@
 
 Four logo concepts, all in the approved **Direction 2 — "Clean Ledger"** palette (indigo `#4F46E5`, periwinkle `#C7D2FE`/`#818CF8`, dark slate `#1E293B`).
 
-> **Status: awaiting selection.** Once an option is chosen, it will be redrawn as production SVG (mark + wordmark + app icon variants, light/dark backgrounds) and applied to the landing page and app.
+> **Status: ✅ SELECTED — Option B "C Monogram Building"** was chosen by the product owner (2026-06-11). A working vector of the mark lives at [`design/logos/comot-mark.svg`](design/logos/comot-mark.svg) and is applied to the landing page (header, footer, favicon). A full production brand kit (refined mark, wordmark lockups, app-icon variants for iOS/Android, light/dark backgrounds) will be derived from it during app scaffolding.
 
 ---
 
@@ -15,7 +15,7 @@ Rounded app-icon square with three stacked floor bars; the highlighted middle ba
 - **Pros:** instantly readable at app-icon size; the floors metaphor maps directly to the name "Komot"; simplest to reproduce.
 - **Cons:** abstract bars are a common motif (lists/menus).
 
-## Option B — C Monogram Building
+## Option B — C Monogram Building ✅ SELECTED
 
 ![Option B](design/logos/logo-b-c-monogram.png)
 
@@ -23,6 +23,10 @@ A bold "C" built from stacked floor slabs, like a building cross-section.
 
 - **Pros:** ownable monogram; strong and distinctive; works as a favicon.
 - **Cons:** boldness reads slightly industrial; needs careful sizing at very small scales.
+
+**Working vector** (simplified flat interpretation for immediate use — a perspective "C" bracket of floor slabs with a highlighted floor inside):
+
+![ComOt mark](design/logos/comot-mark.svg)
 
 ## Option C — Building in a Chat Bubble
 
@@ -53,4 +57,4 @@ Floors rising like steps into an upward arrow — "Komot" (floors) + growth/prog
 | Distinctiveness | ★ | ★★★ | ★★ | ★★ |
 | Story (community + management) | ★ | ★ | ★★★ | ★★ |
 
-**Recommendation:** **Option A** for maximum clarity as an app icon, or **Option C** if the community/chat story should lead the brand (with a bolder small-size variant). The landing page currently uses a simplified version of Option A as a placeholder mark.
+**Decision:** **Option B was selected.** The landing page header, footer, and favicon now use the working vector mark; options A, C, and D are kept here for the archive.

@@ -80,6 +80,6 @@ Three visual directions for the ComOt app, shown on the same home screen so they
 ## Next steps following approval
 
 1. ✅ Landing page (`landing/`) restyled to Direction 2.
-2. ⏳ Logo selection — four options in [`LOGO_OPTIONS.md`](LOGO_OPTIONS.md).
+2. ✅ Logo selected — Option B "C Monogram Building", see [`LOGO_OPTIONS.md`](LOGO_OPTIONS.md).
 3. Design tokens (colors, spacing, radii, typography) to be codified in the shared UI package when the app is scaffolded.
 4. Core screens to be specced: onboarding, home, chat, fault report, budget, events/polls, vendor marketplace, committee settings.

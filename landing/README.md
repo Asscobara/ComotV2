@@ -2,7 +2,7 @@
 
 Static, dependency-free landing page (single `index.html` + assets). Built in the approved **Design Direction 2 — "Clean Ledger"** (indigo/white fintech aesthetic, see `../docs/DESIGN_PROPOSALS.md`).
 
-> The header/footer mark is a placeholder based on logo Option A — it will be replaced with the final SVG once a logo is selected (see `../docs/LOGO_OPTIONS.md`).
+> The header, footer, and favicon use the selected logo — **Option B "C Monogram Building"** (working vector at `../docs/design/logos/comot-mark.svg`; see `../docs/LOGO_OPTIONS.md`).
 
 ## Features
 
