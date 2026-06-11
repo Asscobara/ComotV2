@@ -4,6 +4,7 @@ dist/
 web-build/
 .turbo/
 *.log
-.env
+# .env holds only public client values (URL + publishable key) and is committed;
+# secrets belong in .env.local, which stays ignored.
 .env.local
 .DS_Store
