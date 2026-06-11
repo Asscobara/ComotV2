@@ -33,6 +33,8 @@ function RootNavigator() {
       <Stack.Protected guard={isActiveMember}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="tenants" />
+        <Stack.Screen name="chat" />
+        <Stack.Screen name="faults" />
       </Stack.Protected>
     </Stack>
   );

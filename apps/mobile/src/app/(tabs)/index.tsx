@@ -7,6 +7,7 @@ import type { CommitteeHandover } from '@comot/shared';
 import { Button, Card, Screen, SectionTitle, Tag } from '@/components/ui';
 import { fetchMembers, fetchPendingHandoverForMe, respondHandover } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { fetchFaults } from '@/lib/faults';
 import { colors, radius, spacing, typography } from '@/theme';
 
 export default function HomeScreen() {
@@ -18,6 +19,7 @@ export default function HomeScreen() {
   const isCommittee = membership?.role === 'committee';
 
   const [pendingCount, setPendingCount] = useState(0);
+  const [openFaults, setOpenFaults] = useState(0);
   const [handover, setHandover] = useState<CommitteeHandover | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -29,6 +31,12 @@ export default function HomeScreen() {
           if (isCommittee && building) {
             const members = await fetchMembers(building.id);
             if (active) setPendingCount(members.filter((m) => m.status === 'pending').length);
+          }
+          if (building) {
+            const faults = await fetchFaults(building.id);
+            if (active) {
+              setOpenFaults(faults.filter((f) => f.status === 'reported' || f.status === 'in_progress').length);
+            }
           }
           const h = await fetchPendingHandoverForMe();
           if (active) setHandover(h);
@@ -68,6 +76,8 @@ export default function HomeScreen() {
     if (Platform.OS === 'web') window.alert(t('common.comingSoonBody'));
     else Alert.alert(t('common.comingSoon'), t('common.comingSoonBody'));
   };
+
+  const goToFaults = () => router.push('/faults');
 
   return (
     <Screen>
@@ -123,10 +133,18 @@ export default function HomeScreen() {
       <SectionTitle>{t('home.quickActions')}</SectionTitle>
       <View style={styles.actionsGrid}>
         <QuickAction glyph="💬" label={t('tabs.chat')} onPress={() => router.push('/(tabs)/chat')} />
-        <QuickAction glyph="⚠️" label={t('home.reportFault')} onPress={comingSoon} />
+        <QuickAction glyph="⚠️" label={t('home.reportFault')} onPress={() => router.push('/faults/new')} />
         <QuickAction glyph="💳" label={t('home.payments')} onPress={comingSoon} />
         <QuickAction glyph="📅" label={t('tabs.events')} onPress={() => router.push('/(tabs)/events')} />
       </View>
+
+      {openFaults > 0 ? (
+        <Card style={styles.pendingCard}>
+          <Text style={styles.pendingTitle}>{t('faults.open')}</Text>
+          <Text style={styles.pendingBody}>{t('faults.openCount', { count: openFaults })}</Text>
+          <Button title={t('faults.all')} variant="soft" onPress={goToFaults} />
+        </Card>
+      ) : null}
 
       {isCommittee ? (
         <Card>
