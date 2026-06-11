@@ -1,6 +1,8 @@
 -- ComOt — Phase 1 schema: profiles, buildings, apartments, memberships, committee handover.
 -- Multi-tenancy: every building-scoped table carries building_id and is protected by RLS.
 
+create extension if not exists pgcrypto;
+
 -- ============================================================
 -- Tables
 -- ============================================================

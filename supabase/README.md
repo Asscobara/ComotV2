@@ -29,6 +29,15 @@ EXPO_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
 EXPO_PUBLIC_SUPABASE_ANON_KEY=<anon-key>
 ```
 
+## Tests
+
+`tests/` contains a stubbed Supabase auth environment (`setup.sql`) and a functional smoke test (`smoke.sql`) covering signup triggers, building creation, the join/approval flow, cross-building isolation, and committee handover. They run against plain PostgreSQL 16 — locally or in CI (`.github/workflows/ci.yml`):
+
+```bash
+psql -v ON_ERROR_STOP=1 -c "create database comot_test"
+psql -d comot_test -v ON_ERROR_STOP=1 -f tests/setup.sql -f migrations/0001_init.sql -f tests/smoke.sql
+```
+
 ## RPC surface (Phase 1)
 
 | Function | Caller | Purpose |
