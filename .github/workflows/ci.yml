@@ -47,6 +47,10 @@ jobs:
             -f supabase/migrations/0001_init.sql \
             -f supabase/migrations/0002_chat_faults.sql \
             -f supabase/migrations/0003_events_polls_budget.sql \
+            -f supabase/migrations/0004_vendors.sql \
+            -f supabase/migrations/0005_notifications.sql \
             -f supabase/tests/smoke.sql \
             -f supabase/tests/smoke2.sql \
-            -f supabase/tests/smoke3.sql
+            -f supabase/tests/smoke3.sql \
+            -f supabase/tests/smoke4.sql \
+            -f supabase/tests/smoke5.sql

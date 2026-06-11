@@ -242,3 +242,68 @@ export interface FeePayment {
   amount: number;
   paid_at: string;
 }
+
+// ---------- Vendors (Phase 3b) ----------
+
+export interface Vendor {
+  id: string;
+  user_id: string;
+  business_name: string;
+  categories: VendorCategory[];
+  city: string;
+  phone: string | null;
+  about: string | null;
+  is_active: boolean;
+  created_at: string;
+}
+
+export type BookingStatus = 'booked' | 'accepted' | 'declined' | 'done';
+
+export interface FaultBooking {
+  id: string;
+  fault_id: string;
+  building_id: string;
+  vendor_id: string;
+  status: BookingStatus;
+  fault_title: string;
+  fault_category: string;
+  city: string;
+  created_at: string;
+}
+
+/** One row of the `match_vendors` RPC result. */
+export interface VendorMatch {
+  vendor_id: string;
+  business_name: string;
+  categories: VendorCategory[];
+  city: string;
+  phone: string | null;
+  about: string | null;
+  same_city: boolean;
+  in_book: boolean;
+  preferred: boolean;
+}
+
+// ---------- Notifications (Phase 4) ----------
+
+export type NotificationKind =
+  | 'member_pending'
+  | 'member_approved'
+  | 'member_rejected'
+  | 'fault_reported'
+  | 'fault_status'
+  | 'handover_request'
+  | 'poll_opened'
+  | 'booking_new'
+  | 'booking_response'
+  | 'fee_due';
+
+export interface AppNotification {
+  id: string;
+  user_id: string;
+  building_id: string | null;
+  kind: NotificationKind;
+  payload: Record<string, string | number | null>;
+  read_at: string | null;
+  created_at: string;
+}

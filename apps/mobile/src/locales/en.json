@@ -38,6 +38,8 @@
     "createBody": "Set up a new building — address, floors and apartments.",
     "joinTitle": "I'm a tenant",
     "joinBody": "Join an existing building with an invite code from the committee.",
+    "vendorTitle": "I'm a service provider",
+    "vendorBody": "Register free as a professional — get jobs from buildings in your area.",
     "buildingName": "Building name (optional)",
     "address": "Address",
     "city": "City",
@@ -181,7 +183,8 @@
     "empty": "No events planned",
     "delete": "Delete event",
     "deleteConfirm": "Delete this event?",
-    "polls": "Polls"
+    "polls": "Polls",
+    "discussion": "Virtual meeting room"
   },
   "polls": {
     "title": "Polls",
@@ -234,6 +237,63 @@
     "unpaid": "Not paid",
     "markPaid": "Mark apartment {{number}} as paid?",
     "feeProgress": "{{paid}} of {{total}} apartments paid"
+  },
+  "vendor": {
+    "register": "Service provider registration",
+    "businessName": "Business name",
+    "categories": "Areas of expertise",
+    "city": "City / service area",
+    "phone": "Phone",
+    "about": "About the business (optional)",
+    "submit": "Register free",
+    "dashTitle": "Hello, {{name}}",
+    "myProfile": "My profile",
+    "bookings": "Job bookings",
+    "noBookings": "No bookings yet — buildings in your area will match you automatically",
+    "accept": "Accept job",
+    "decline": "Decline",
+    "status_booked": "Awaiting confirmation",
+    "status_accepted": "Accepted",
+    "status_declined": "Declined",
+    "status_done": "Done",
+    "freeNote": "Registration is free at this stage. Later — subscription with priority matching."
+  },
+  "matching": {
+    "findPro": "Find a professional",
+    "matches": "Matching professionals",
+    "noMatches": "No matching professionals found yet",
+    "book": "Book",
+    "sameCity": "Same city",
+    "inBook": "Building vendor",
+    "preferred": "Preferred",
+    "bookedVendor": "Booked: {{name}}",
+    "bookingStatus": "Booking status"
+  },
+  "reports": {
+    "title": "Reports",
+    "thisYear": "Year {{year}}",
+    "byCategory": "By category",
+    "feeRate": "Fee collection · {{period}}",
+    "feeRateValue": "{{paid}} of {{total}} apartments ({{pct}}%)",
+    "exportCsv": "Export CSV",
+    "exported": "Report copied/shared",
+    "noData": "No data yet"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications",
+    "markAll": "Mark all as read",
+    "n_member_pending": "{{full_name}} is waiting for join approval",
+    "n_member_approved": "You were approved to {{building_name}} 🎉",
+    "n_member_rejected": "Your request to join {{building_name}} was declined",
+    "n_fault_reported": "New issue: {{title}}",
+    "n_fault_status": "Issue \"{{title}}\" update: {{status}}",
+    "n_handover_request": "{{from_name}} offered you the committee role of {{building_name}}",
+    "n_poll_opened": "New poll: {{question}}",
+    "n_booking_new": "New job: {{title}} · {{city}}",
+    "n_booking_accepted": "{{vendor_name}} accepted the job \"{{title}}\"",
+    "n_booking_declined": "{{vendor_name}} declined the job \"{{title}}\"",
+    "n_fee_due": "Reminder: committee fee {{period}} — ₪{{amount}}"
   },
   "more": {
     "title": "More",

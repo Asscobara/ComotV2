@@ -1,5 +1,5 @@
 import { useFocusEffect, useRouter } from 'expo-router';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -10,12 +10,14 @@ import { useAuth } from '@/lib/auth';
 import { fetchBudgetEntries, summarize } from '@/lib/budget';
 import { fetchEvents } from '@/lib/events';
 import { fetchFaults } from '@/lib/faults';
+import { fetchUnreadCount, subscribeToNotifications } from '@/lib/notifications';
+import { supabase } from '@/lib/supabase';
 import { colors, radius, spacing, typography } from '@/theme';
 
 export default function HomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { profile, membership, refresh } = useAuth();
+  const { session, profile, membership, refresh } = useAuth();
 
   const building = membership?.building ?? null;
   const isCommittee = membership?.role === 'committee';
@@ -26,6 +28,18 @@ export default function HomeScreen() {
   const [deficit, setDeficit] = useState(false);
   const [handover, setHandover] = useState<CommitteeHandover | null>(null);
   const [copied, setCopied] = useState(false);
+  const [unread, setUnread] = useState(0);
+
+  useEffect(() => {
+    const userId = session?.user.id;
+    if (!userId) return;
+    const channel = subscribeToNotifications(userId, () => {
+      fetchUnreadCount().then(setUnread).catch(() => {});
+    });
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [session?.user.id]);
 
   useFocusEffect(
     useCallback(() => {
@@ -50,6 +64,8 @@ export default function HomeScreen() {
           }
           const h = await fetchPendingHandoverForMe();
           if (active) setHandover(h);
+          const u = await fetchUnreadCount();
+          if (active) setUnread(u);
         } catch {
           // network/config errors are surfaced by the actions themselves
         }
@@ -93,10 +109,20 @@ export default function HomeScreen() {
     <Screen>
       <View style={styles.headerRow}>
         <Text style={styles.hello}>{t('home.hello', { name: profile?.full_name || '' })}</Text>
-        <Tag
-          label={isCommittee ? t('home.roleCommittee') : t('home.roleTenant')}
-          tone={isCommittee ? 'primary' : 'neutral'}
-        />
+        <View style={styles.headerActions}>
+          <Pressable style={styles.bell} onPress={() => router.push('/notifications')}>
+            <Text style={styles.bellGlyph}>🔔</Text>
+            {unread > 0 ? (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{unread > 9 ? '9+' : unread}</Text>
+              </View>
+            ) : null}
+          </Pressable>
+          <Tag
+            label={isCommittee ? t('home.roleCommittee') : t('home.roleTenant')}
+            tone={isCommittee ? 'primary' : 'neutral'}
+          />
+        </View>
       </View>
 
       {handover ? (
@@ -205,6 +231,22 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   hello: { ...typography.title, fontSize: 24, flexShrink: 1, textAlign: 'left' },
+  headerActions: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  bell: { padding: 4 },
+  bellGlyph: { fontSize: 22 },
+  badge: {
+    position: 'absolute',
+    top: 0,
+    insetInlineEnd: -2,
+    backgroundColor: colors.danger,
+    borderRadius: 9,
+    minWidth: 18,
+    height: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 3,
+  },
+  badgeText: { color: colors.white, fontSize: 10, fontWeight: '800' },
   buildingCard: { backgroundColor: colors.primary, borderColor: colors.primaryDark },
   buildingName: { fontSize: 20, fontWeight: '800', color: colors.white, textAlign: 'left' },
   buildingMeta: { color: colors.periwinkle, marginTop: 2, textAlign: 'left' },

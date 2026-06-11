@@ -77,16 +77,19 @@ export default function MoreScreen() {
             <Text style={styles.meta}>
               {t('more.fee', { amount: building.fee_amount, day: building.fee_due_day })}
             </Text>
-            {isCommittee ? (
-              <View style={styles.actions}>
-                <Button title={t('more.manageTenants')} variant="soft" onPress={() => router.push('/tenants')} />
-                <Button
-                  title={t('more.handover')}
-                  variant="ghost"
-                  onPress={() => router.push('/tenants?handover=1')}
-                />
-              </View>
-            ) : null}
+            <View style={styles.actions}>
+              <Button title={t('reports.title')} variant="soft" onPress={() => router.push('/reports')} />
+              {isCommittee ? (
+                <>
+                  <Button title={t('more.manageTenants')} variant="soft" onPress={() => router.push('/tenants')} />
+                  <Button
+                    title={t('more.handover')}
+                    variant="ghost"
+                    onPress={() => router.push('/tenants?handover=1')}
+                  />
+                </>
+              ) : null}
+            </View>
           </Card>
         </>
       ) : null}

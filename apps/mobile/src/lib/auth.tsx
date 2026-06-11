@@ -1,5 +1,5 @@
 import type { Session } from '@supabase/supabase-js';
-import type { Building, Membership, Profile } from '@comot/shared';
+import type { Building, Membership, Profile, Vendor } from '@comot/shared';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
@@ -7,6 +7,7 @@ import { Platform } from 'react-native';
 
 import { fetchMyMembership, fetchMyProfile } from './api';
 import { supabase } from './supabase';
+import { fetchMyVendorProfile } from './vendors';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -19,6 +20,7 @@ interface AuthState {
   session: Session | null;
   profile: Profile | null;
   membership: MembershipWithBuilding | null;
+  vendor: Vendor | null;
   refresh: () => Promise<void>;
   signInWithPassword: (email: string, password: string) => Promise<void>;
   signUpWithPassword: (email: string, password: string, fullName: string) => Promise<{ needsConfirmation: boolean }>;
@@ -33,20 +35,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [membership, setMembership] = useState<MembershipWithBuilding | null>(null);
+  const [vendor, setVendor] = useState<Vendor | null>(null);
 
   const loadAccount = useCallback(async (s: Session | null) => {
     if (!s) {
       setProfile(null);
       setMembership(null);
+      setVendor(null);
       return;
     }
     try {
-      const [p, m] = await Promise.all([fetchMyProfile(), fetchMyMembership()]);
+      const [p, m, v] = await Promise.all([
+        fetchMyProfile(),
+        fetchMyMembership(),
+        fetchMyVendorProfile().catch(() => null),
+      ]);
       setProfile(p);
       setMembership(m);
+      setVendor(v);
     } catch {
       setProfile(null);
       setMembership(null);
+      setVendor(null);
     }
   }, []);
 
@@ -128,13 +138,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       session,
       profile,
       membership,
+      vendor,
       refresh,
       signInWithPassword,
       signUpWithPassword,
       signInWithProvider,
       signOut,
     }),
-    [loading, session, profile, membership, refresh, signInWithPassword, signUpWithPassword, signInWithProvider, signOut],
+    [loading, session, profile, membership, vendor, refresh, signInWithPassword, signUpWithPassword, signInWithProvider, signOut],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

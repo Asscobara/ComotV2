@@ -1,14 +1,17 @@
-import type { FaultStatus, FaultUpdateWithAuthor, FaultWithReporter } from '@comot/shared';
+import type { FaultBooking, FaultStatus, FaultUpdateWithAuthor, FaultWithReporter, Vendor, VendorMatch } from '@comot/shared';
 import { Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Platform, StyleSheet, Text, View } from 'react-native';
 
 import { CATEGORY_GLYPHS, FaultStatusTag } from '@/components/fault-bits';
-import { Button, Card, Screen, SectionTitle, TextField } from '@/components/ui';
+import { Button, Card, Screen, SectionTitle, Tag, TextField } from '@/components/ui';
 import { useAuth } from '@/lib/auth';
 import { addFaultNote, fetchFault, fetchFaultUpdates, updateFaultStatus } from '@/lib/faults';
+import { bookVendor, fetchBookingForFault, matchVendors } from '@/lib/vendors';
 import { colors, spacing, typography } from '@/theme';
+
+type BookingWithVendor = FaultBooking & { vendor: Pick<Vendor, 'business_name' | 'phone' | 'city'> | null };
 
 function notifyError(fallback: string, e: unknown) {
   const msg = e instanceof Error ? e.message : fallback;
@@ -30,14 +33,21 @@ export default function FaultDetailScreen() {
 
   const [fault, setFault] = useState<FaultWithReporter | null>(null);
   const [updates, setUpdates] = useState<FaultUpdateWithAuthor[]>([]);
+  const [booking, setBooking] = useState<BookingWithVendor | null>(null);
+  const [matches, setMatches] = useState<VendorMatch[] | null>(null);
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
 
   const load = useCallback(async () => {
     try {
-      const [f, u] = await Promise.all([fetchFault(id), fetchFaultUpdates(id)]);
+      const [f, u, b] = await Promise.all([
+        fetchFault(id),
+        fetchFaultUpdates(id),
+        fetchBookingForFault(id).catch(() => null),
+      ]);
       setFault(f);
       setUpdates(u);
+      setBooking(b);
     } catch (e) {
       notifyError(t('common.error'), e);
     }
@@ -68,6 +78,30 @@ export default function FaultDetailScreen() {
     try {
       await addFaultNote(fault.id, fault.building_id, note);
       setNote('');
+      await load();
+    } catch (e) {
+      notifyError(t('common.error'), e);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const findPros = async () => {
+    setBusy(true);
+    try {
+      setMatches(await matchVendors(id));
+    } catch (e) {
+      notifyError(t('common.error'), e);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const book = async (vendorId: string) => {
+    setBusy(true);
+    try {
+      await bookVendor(id, vendorId);
+      setMatches(null);
       await load();
     } catch (e) {
       notifyError(t('common.error'), e);
@@ -109,6 +143,61 @@ export default function FaultDetailScreen() {
         </View>
         {fault.description ? <Text style={styles.description}>{fault.description}</Text> : null}
       </Card>
+
+      {booking ? (
+        <>
+          <SectionTitle>{t('matching.bookingStatus')}</SectionTitle>
+          <Card>
+            <View style={styles.bookingRow}>
+              <View style={styles.flex}>
+                <Text style={styles.vendorName}>{booking.vendor?.business_name ?? '—'}</Text>
+                <Text style={styles.meta}>
+                  {booking.vendor?.city ?? ''}
+                  {booking.vendor?.phone ? ` · ${booking.vendor.phone}` : ''}
+                </Text>
+              </View>
+              <Tag
+                label={t(`vendor.status_${booking.status}`)}
+                tone={booking.status === 'accepted' ? 'success' : 'warning'}
+              />
+            </View>
+          </Card>
+        </>
+      ) : null}
+
+      {isCommittee && !booking && fault.status !== 'closed' ? (
+        <>
+          <SectionTitle>{t('matching.findPro')}</SectionTitle>
+          {matches === null ? (
+            <Button title={t('matching.findPro')} variant="soft" onPress={findPros} loading={busy} />
+          ) : matches.length === 0 ? (
+            <Card>
+              <Text style={styles.meta}>{t('matching.noMatches')}</Text>
+            </Card>
+          ) : (
+            matches.map((m) => (
+              <Card key={m.vendor_id}>
+                <View style={styles.bookingRow}>
+                  <View style={styles.flex}>
+                    <Text style={styles.vendorName}>{m.business_name}</Text>
+                    <Text style={styles.meta}>
+                      {m.city}
+                      {m.phone ? ` · ${m.phone}` : ''}
+                    </Text>
+                    <View style={styles.tagRow}>
+                      {m.preferred ? <Tag label={t('matching.preferred')} tone="primary" /> : null}
+                      {m.in_book && !m.preferred ? <Tag label={t('matching.inBook')} tone="primary" /> : null}
+                      {m.same_city ? <Tag label={t('matching.sameCity')} tone="success" /> : null}
+                    </View>
+                  </View>
+                  <Button title={t('matching.book')} onPress={() => book(m.vendor_id)} loading={busy} />
+                </View>
+              </Card>
+            ))
+          )}
+          <View style={{ height: spacing.sm }} />
+        </>
+      ) : null}
 
       <SectionTitle>{t('faults.timeline')}</SectionTitle>
       <Card>
@@ -170,6 +259,9 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   updateHead: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  bookingRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  vendorName: { ...typography.body, fontWeight: '700', textAlign: 'left' },
+  tagRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 6 },
   updateAuthor: { fontWeight: '700', color: colors.ink, fontSize: 14, textAlign: 'left' },
   updateNote: { ...typography.body, fontSize: 14, marginTop: 2, textAlign: 'left' },
   updateTime: { ...typography.caption, fontSize: 11, marginTop: 2, color: colors.inkFaint, textAlign: 'left' },

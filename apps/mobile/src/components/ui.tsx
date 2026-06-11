@@ -7,6 +7,7 @@ import {
   Text,
   TextInput,
   View,
+  type StyleProp,
   type TextInputProps,
   type ViewStyle,
 } from 'react-native';
@@ -21,7 +22,7 @@ export function Screen({
 }: {
   children: React.ReactNode;
   scroll?: boolean;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }) {
   const insets = useSafeAreaInsets();
   const padding = {
@@ -43,7 +44,7 @@ export function Screen({
   );
 }
 
-export function Card({ children, style }: { children: React.ReactNode; style?: ViewStyle }) {
+export function Card({ children, style }: { children: React.ReactNode; style?: StyleProp<ViewStyle> }) {
   return <View style={[styles.card, style]}>{children}</View>;
 }
 
@@ -64,7 +65,7 @@ export function Button({
   variant?: 'primary' | 'ghost' | 'danger' | 'soft';
   loading?: boolean;
   disabled?: boolean;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }) {
   const isDisabled = disabled || loading;
   return (
