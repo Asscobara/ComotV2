@@ -3,10 +3,12 @@ import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import type { CommitteeHandover } from '@comot/shared';
-import { Button, Card, Screen, SectionTitle, Tag } from '@/components/ui';
+import type { BuildingEvent, CommitteeHandover } from '@comot/shared';
+import { Banner, Button, Card, Screen, SectionTitle, Tag } from '@/components/ui';
 import { fetchMembers, fetchPendingHandoverForMe, respondHandover } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { fetchBudgetEntries, summarize } from '@/lib/budget';
+import { fetchEvents } from '@/lib/events';
 import { fetchFaults } from '@/lib/faults';
 import { colors, radius, spacing, typography } from '@/theme';
 
@@ -20,6 +22,8 @@ export default function HomeScreen() {
 
   const [pendingCount, setPendingCount] = useState(0);
   const [openFaults, setOpenFaults] = useState(0);
+  const [nextEvent, setNextEvent] = useState<BuildingEvent | null>(null);
+  const [deficit, setDeficit] = useState(false);
   const [handover, setHandover] = useState<CommitteeHandover | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -33,9 +37,15 @@ export default function HomeScreen() {
             if (active) setPendingCount(members.filter((m) => m.status === 'pending').length);
           }
           if (building) {
-            const faults = await fetchFaults(building.id);
+            const [faults, events, entries] = await Promise.all([
+              fetchFaults(building.id),
+              fetchEvents(building.id),
+              fetchBudgetEntries(building.id),
+            ]);
             if (active) {
               setOpenFaults(faults.filter((f) => f.status === 'reported' || f.status === 'in_progress').length);
+              setNextEvent(events.find((e) => new Date(e.starts_at).getTime() >= Date.now()) ?? null);
+              setDeficit(summarize(entries).balance < 0);
             }
           }
           const h = await fetchPendingHandoverForMe();
@@ -122,12 +132,34 @@ export default function HomeScreen() {
         </Card>
       ) : null}
 
+      {isCommittee && deficit ? (
+        <Banner tone="warning" text={`${t('budget.deficit')} ${t('budget.deficitBody')}`} />
+      ) : null}
+
       {isCommittee && pendingCount > 0 ? (
         <Card style={styles.pendingCard}>
           <Text style={styles.pendingTitle}>{t('home.pendingApprovals')}</Text>
           <Text style={styles.pendingBody}>{t('home.pendingApprovalsBody', { count: pendingCount })}</Text>
           <Button title={t('home.review')} variant="soft" onPress={() => router.push('/tenants')} />
         </Card>
+      ) : null}
+
+      {nextEvent ? (
+        <Pressable onPress={() => router.push({ pathname: '/events/[id]', params: { id: nextEvent.id } })}>
+          <Card style={styles.nextEventCard}>
+            <Text style={styles.nextEventLabel}>{t('home.nextEvent')}</Text>
+            <Text style={styles.nextEventTitle}>{nextEvent.title}</Text>
+            <Text style={styles.nextEventMeta}>
+              {new Date(nextEvent.starts_at).toLocaleString(undefined, {
+                weekday: 'short',
+                day: 'numeric',
+                month: 'short',
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </Text>
+          </Card>
+        </Pressable>
       ) : null}
 
       <SectionTitle>{t('home.quickActions')}</SectionTitle>
@@ -193,6 +225,10 @@ const styles = StyleSheet.create({
   pendingCard: { borderColor: colors.periwinkle, backgroundColor: colors.primarySoft },
   pendingTitle: { ...typography.heading, fontSize: 16, textAlign: 'left' },
   pendingBody: { ...typography.caption, marginVertical: spacing.sm, textAlign: 'left' },
+  nextEventCard: { borderColor: colors.periwinkle },
+  nextEventLabel: { ...typography.label, fontSize: 11, color: colors.primary, textAlign: 'left' },
+  nextEventTitle: { ...typography.heading, fontSize: 16, marginTop: 2, textAlign: 'left' },
+  nextEventMeta: { ...typography.caption, marginTop: 2, textAlign: 'left' },
   actionsGrid: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.md },
   action: {
     flex: 1,

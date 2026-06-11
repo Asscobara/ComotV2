@@ -35,6 +35,8 @@ function RootNavigator() {
         <Stack.Screen name="tenants" />
         <Stack.Screen name="chat" />
         <Stack.Screen name="faults" />
+        <Stack.Screen name="events" />
+        <Stack.Screen name="budget" />
       </Stack.Protected>
     </Stack>
   );

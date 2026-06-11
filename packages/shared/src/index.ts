@@ -150,3 +150,95 @@ export interface FaultUpdateWithAuthor extends FaultUpdate {
 }
 
 export const FAULT_STATUSES: FaultStatus[] = ['reported', 'in_progress', 'resolved', 'closed'];
+
+// ---------- Events & Polls (Phase 3) ----------
+
+export type EventKind = 'meeting' | 'maintenance' | 'payment' | 'other';
+export type EventRecurrence = 'none' | 'weekly' | 'monthly' | 'yearly';
+
+export interface BuildingEvent {
+  id: string;
+  building_id: string;
+  kind: EventKind;
+  title: string;
+  description: string | null;
+  location: string | null;
+  starts_at: string;
+  ends_at: string | null;
+  recurrence: EventRecurrence;
+  created_by: string | null;
+  created_at: string;
+}
+
+export interface Poll {
+  id: string;
+  building_id: string;
+  event_id: string | null;
+  question: string;
+  is_anonymous: boolean;
+  status: 'open' | 'closed';
+  closes_at: string | null;
+  created_at: string;
+}
+
+export interface PollOption {
+  id: string;
+  poll_id: string;
+  label: string;
+  position: number;
+}
+
+export interface PollWithOptions extends Poll {
+  options: PollOption[];
+}
+
+/** Payload returned by the `poll_results` RPC. */
+export interface PollResults {
+  poll_id: string;
+  status: 'open' | 'closed';
+  total_votes: number;
+  my_vote: string | null;
+  options: { id: string; label: string; votes: number }[];
+}
+
+export const EVENT_KINDS: EventKind[] = ['meeting', 'maintenance', 'payment', 'other'];
+export const EVENT_RECURRENCES: EventRecurrence[] = ['none', 'weekly', 'monthly', 'yearly'];
+
+// ---------- Budget (Phase 3) ----------
+
+export type BudgetKind = 'income' | 'expense';
+
+export const INCOME_CATEGORIES = ['fee', 'special_collection', 'other_income'] as const;
+export const EXPENSE_CATEGORIES = [
+  'gardening',
+  'electricity',
+  'cleaning',
+  'elevator',
+  'maintenance',
+  'repair',
+  'other_expense',
+] as const;
+export type IncomeCategory = (typeof INCOME_CATEGORIES)[number];
+export type ExpenseCategory = (typeof EXPENSE_CATEGORIES)[number];
+export type BudgetCategory = IncomeCategory | ExpenseCategory;
+
+export interface BudgetEntry {
+  id: string;
+  building_id: string;
+  kind: BudgetKind;
+  category: BudgetCategory;
+  title: string;
+  amount: number;
+  entry_date: string;
+  fault_id: string | null;
+  created_at: string;
+}
+
+export interface FeePayment {
+  id: string;
+  building_id: string;
+  apartment_id: string;
+  period: string; // 'YYYY-MM'
+  amount: number;
+  paid_at: string;
+}
