@@ -7,7 +7,15 @@
     "icon": "./assets/images/icon.png",
     "scheme": "comot",
     "userInterfaceStyle": "automatic",
-    "ios": {},
+    "ios": {
+      "bundleIdentifier": "com.comot.app",
+      "supportsTablet": true,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleAllowMixedLocalizations": true,
+        "CFBundleLocalizations": ["he", "en"]
+      }
+    },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#4F46E5",

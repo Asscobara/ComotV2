@@ -1,0 +1,59 @@
+name: Mobile Build (EAS)
+
+# Runs a native build on Expo's cloud builders, so no Mac or Xcode is needed
+# locally. Requires the EXPO_TOKEN repository secret (see docs/IOS_TESTING.md).
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Target platform
+        type: choice
+        default: ios
+        options: [ios, android, all]
+      profile:
+        description: Build profile from apps/mobile/eas.json
+        type: choice
+        default: preview
+        options: [preview, production, development]
+      submit:
+        description: Send to TestFlight / Play when the build finishes
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    name: ${{ inputs.platform }} · ${{ inputs.profile }}
+    runs-on: ubuntu-latest
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+    steps:
+      - name: Require EXPO_TOKEN
+        run: |
+          if [ -z "$EXPO_TOKEN" ]; then
+            echo "::error::EXPO_TOKEN secret is missing. Create a token at https://expo.dev/settings/access-tokens and add it under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # --no-wait returns as soon as the build is queued; progress is on expo.dev.
+      - name: Queue build
+        working-directory: apps/mobile
+        run: |
+          args=(--platform "$PLATFORM" --profile "$PROFILE" --non-interactive --no-wait)
+          if [ "$SUBMIT" = "true" ]; then
+            args+=(--auto-submit)
+          fi
+          pnpm dlx eas-cli@latest build "${args[@]}"
+        env:
+          PLATFORM: ${{ inputs.platform }}
+          PROFILE: ${{ inputs.profile }}
+          SUBMIT: ${{ inputs.submit }}

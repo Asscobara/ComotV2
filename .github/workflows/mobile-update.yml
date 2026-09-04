@@ -1,0 +1,48 @@
+name: Mobile Update (EAS Update)
+
+# Ships JavaScript-only changes to an already-installed build (TestFlight or
+# ad-hoc) without waiting for a new native build. Native changes — new Expo
+# modules, app.json plugin or permission edits — still need Mobile Build (EAS).
+
+on:
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: Channel to publish to
+        type: choice
+        default: preview
+        options: [preview, production, development]
+      message:
+        description: Update message shown in the Expo dashboard
+        type: string
+        default: Manual update
+
+jobs:
+  update:
+    name: Publish to ${{ inputs.channel }}
+    runs-on: ubuntu-latest
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+    steps:
+      - name: Require EXPO_TOKEN
+        run: |
+          if [ -z "$EXPO_TOKEN" ]; then
+            echo "::error::EXPO_TOKEN secret is missing. See docs/IOS_TESTING.md."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Publish update
+        working-directory: apps/mobile
+        run: pnpm dlx eas-cli@latest update --channel "$CHANNEL" --message "$MESSAGE" --non-interactive
+        env:
+          CHANNEL: ${{ inputs.channel }}
+          MESSAGE: ${{ inputs.message }}
