@@ -32,6 +32,15 @@ pnpm landing                                   # http://localhost:8080
 pnpm typecheck && pnpm lint
 ```
 
+## Run it on your phone
+
+The fastest way to try ComOt on an iPhone takes about two minutes and costs nothing: open
+<https://asscobara.github.io/ComotV2/app/> in Safari, then *Share > Add to Home Screen*. It
+installs as a standalone app against the live backend.
+
+For Expo Go and for real signed builds via TestFlight, see
+[`docs/IOS_TESTING.md`](docs/IOS_TESTING.md).
+
 ## Project status
 
 | Deliverable | Where | Status |
@@ -41,6 +50,7 @@ pnpm typecheck && pnpm lint
 | Logo | [`docs/LOGO_OPTIONS.md`](docs/LOGO_OPTIONS.md) | ✅ Selected — Option B "C Monogram Building" |
 | Marketing landing page | [`apps/landing/`](apps/landing/) | ✅ Built in approved design |
 | Technology stack | [`docs/TECH_STACK.md`](docs/TECH_STACK.md) | ✅ Approved (Expo + Supabase) |
+| Installing on a device | [`docs/IOS_TESTING.md`](docs/IOS_TESTING.md) | ✅ Home-screen install live; EAS configured |
 | **Phase 1 — Foundations** | [`apps/mobile/`](apps/mobile/), [`supabase/`](supabase/) | ✅ Implemented |
 | Phase 2 — Chat, events, polls, faults | — | ⏳ Next |
 | Phase 3 — Budget, vendors, matching | — | Planned |
