@@ -7,16 +7,12 @@ import { Alert, Platform, Pressable, StyleSheet, Text, View } from 'react-native
 import { Button, Card, Screen, SectionTitle, Segmented } from '@/components/ui';
 import { fetchApartments, fetchMember, removeMember, updateMember } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { useErrorAlert } from '@/lib/errors';
 import { colors, radius, spacing, typography } from '@/theme';
-
-function notifyError(fallback: string, e: unknown) {
-  const msg = e instanceof Error ? e.message : fallback;
-  if (Platform.OS === 'web') window.alert(msg);
-  else Alert.alert(msg);
-}
 
 export default function EditTenantScreen() {
   const { t } = useTranslation();
+  const notifyError = useErrorAlert();
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { membership } = useAuth();
@@ -41,10 +37,10 @@ export default function EditTenantScreen() {
           setApartments(await fetchApartments(membership.building.id));
         }
       } catch (e) {
-        notifyError(t('common.error'), e);
+        notifyError(e);
       }
     })();
-  }, [id, membership, t]);
+  }, [id, membership, notifyError]);
 
   const save = async () => {
     setBusy(true);
@@ -52,7 +48,7 @@ export default function EditTenantScreen() {
       await updateMember(id, { apartment_id: apartmentId, tenant_type: tenantType, role });
       router.back();
     } catch (e) {
-      notifyError(t('common.error'), e);
+      notifyError(e);
     } finally {
       setBusy(false);
     }
@@ -64,7 +60,7 @@ export default function EditTenantScreen() {
         await removeMember(id);
         router.back();
       } catch (e) {
-        notifyError(t('common.error'), e);
+        notifyError(e);
       }
     };
     if (Platform.OS === 'web') {

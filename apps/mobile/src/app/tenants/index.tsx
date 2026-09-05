@@ -2,21 +2,17 @@ import type { MemberWithProfile } from '@comot/shared';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Banner, Button, Card, EmptyState, Screen, SectionTitle, Tag } from '@/components/ui';
 import { approveMember, fetchMembers, requestHandover } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { useErrorAlert } from '@/lib/errors';
 import { colors, spacing, typography } from '@/theme';
-
-function notifyError(fallback: string, e: unknown) {
-  const msg = e instanceof Error ? e.message : fallback;
-  if (Platform.OS === 'web') window.alert(msg);
-  else Alert.alert(msg);
-}
 
 export default function TenantsScreen() {
   const { t } = useTranslation();
+  const notifyError = useErrorAlert();
   const router = useRouter();
   const { session, membership } = useAuth();
   const { handover } = useLocalSearchParams<{ handover?: string }>();
@@ -33,9 +29,9 @@ export default function TenantsScreen() {
     try {
       setMembers(await fetchMembers(building.id));
     } catch (e) {
-      notifyError(t('common.error'), e);
+      notifyError(e);
     }
-  }, [building, t]);
+  }, [building, notifyError]);
 
   useFocusEffect(
     useCallback(() => {
@@ -48,7 +44,7 @@ export default function TenantsScreen() {
       await approveMember(membershipId, approve);
       await load();
     } catch (e) {
-      notifyError(t('common.error'), e);
+      notifyError(e);
     }
   };
 
@@ -58,7 +54,7 @@ export default function TenantsScreen() {
       await requestHandover(building.id, member.user_id);
       setHandoverSent(true);
     } catch (e) {
-      notifyError(t('common.error'), e);
+      notifyError(e);
     }
   };
 

@@ -29,6 +29,17 @@ EXPO_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
 EXPO_PUBLIC_SUPABASE_ANON_KEY=<anon-key>
 ```
 
+## Free-tier projects pause when idle
+
+A free Supabase project is paused after about a week without traffic, and a paused project's
+API hostname stops resolving in DNS entirely. The app keeps loading — it is only static
+files — but every request fails, which surfaces as "can't reach the server".
+
+Restore it from the project's page in the Supabase dashboard. A restore keeps the same
+project ref, so no code or `.env` change is needed. If the project was deleted rather than
+paused you have to create a new one, which means a new ref: update `apps/mobile/.env` and
+re-apply every migration in order.
+
 ## Tests
 
 `tests/` contains a stubbed Supabase auth environment (`setup.sql`) and a functional smoke test (`smoke.sql`) covering signup triggers, building creation, the join/approval flow, cross-building isolation, and committee handover. They run against plain PostgreSQL 16 — locally or in CI (`.github/workflows/ci.yml`):

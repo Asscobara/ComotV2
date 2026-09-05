@@ -2,20 +2,17 @@ import type { BuildingPreview, TenantType } from '@comot/shared';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Button, Card, Screen, Segmented, TextField } from '@/components/ui';
 import { getBuildingByInviteCode, joinBuilding } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { useErrorAlert } from '@/lib/errors';
 import { colors, radius, spacing, typography } from '@/theme';
-
-function notifyError(title: string, message?: string) {
-  if (Platform.OS === 'web') window.alert(message ?? title);
-  else Alert.alert(title, message);
-}
 
 export default function JoinBuildingScreen() {
   const { t } = useTranslation();
+  const notifyError = useErrorAlert();
   const router = useRouter();
   const { refresh } = useAuth();
 
@@ -38,7 +35,7 @@ export default function JoinBuildingScreen() {
         setPreview(result);
       }
     } catch (e) {
-      notifyError(t('common.error'), e instanceof Error ? e.message : undefined);
+      notifyError(e);
     } finally {
       setBusy(false);
     }
@@ -51,7 +48,7 @@ export default function JoinBuildingScreen() {
       await refresh();
       router.replace('/(onboarding)/pending');
     } catch (e) {
-      notifyError(t('common.error'), e instanceof Error ? e.message : undefined);
+      notifyError(e);
     } finally {
       setBusy(false);
     }

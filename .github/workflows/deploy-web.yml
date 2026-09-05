@@ -40,6 +40,24 @@ jobs:
           "
           pnpm exec expo export --platform web
 
+      # public/index.html ships root-absolute PWA hrefs so they work in local
+      # dev; on Pages the app lives under a subpath, so rebase them here.
+      - name: Rebase home-screen install paths onto the subpath
+        working-directory: apps/mobile
+        run: |
+          node -e "
+            const fs = require('fs');
+            const base = '/ComotV2/app';
+            const file = 'dist/index.html';
+            let html = fs.readFileSync(file, 'utf8');
+            for (const href of ['/manifest.webmanifest', '/icons/icon-1024.png']) {
+              const next = html.replaceAll('href=\"' + href + '\"', 'href=\"' + base + href + '\"');
+              if (next === html) throw new Error('no href to rebase for ' + href);
+              html = next;
+            }
+            fs.writeFileSync(file, html);
+          "
+
       - name: Assemble site (landing at /, app at /app/)
         run: |
           mkdir -p site/app

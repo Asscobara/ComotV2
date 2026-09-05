@@ -13,7 +13,9 @@
     "refresh": "Refresh",
     "notConfigured": "Supabase is not configured yet — see supabase/README.md",
     "comingSoon": "Coming soon",
-    "comingSoonBody": "This screen arrives in the next development phase."
+    "comingSoonBody": "This screen arrives in the next development phase.",
+    "offlineTitle": "Can't reach the server",
+    "offlineBody": "ComOt could not connect to its backend. Check your internet connection and try again — if it keeps failing, the Supabase project may be paused."
   },
   "auth": {
     "welcome": "Welcome",

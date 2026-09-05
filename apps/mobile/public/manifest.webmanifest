@@ -1,0 +1,21 @@
+{
+  "name": "ComOt — ניהול בניין",
+  "short_name": "ComOt",
+  "description": "ניהול בניין מגורים: דיירים, צ'אט, תשלומי ועד, תקלות, אסיפות, סקרים ונותני שירות.",
+  "lang": "he",
+  "dir": "rtl",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F8F9FB",
+  "theme_color": "#4F46E5",
+  "start_url": "./",
+  "scope": "./",
+  "icons": [
+    {
+      "src": "./icons/icon-1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
