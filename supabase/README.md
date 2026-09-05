@@ -1,6 +1,8 @@
 # ComOt — Supabase backend
 
-PostgreSQL schema, Row-Level Security policies, and RPCs. Phase 1 covers: profiles, buildings, apartments, memberships (tenant approval flow), and committee handover.
+PostgreSQL schema, Row-Level Security policies, and RPCs covering profiles, buildings,
+apartments, memberships and committee handover, plus chat, faults, events, polls, budget,
+the vendor marketplace, and trigger-driven notifications.
 
 ## Multi-tenancy model
 
@@ -11,8 +13,22 @@ PostgreSQL schema, Row-Level Security policies, and RPCs. Phase 1 covers: profil
 
 ## Setup (one time)
 
-1. Create a project at [supabase.com](https://supabase.com).
-2. Apply the migration — either paste `migrations/0001_init.sql` into the SQL editor, or use the CLI:
+The backend is a hosted Supabase project, not something this repository deploys. Merging to
+`main` redeploys only the web app and landing page to GitHub Pages; the database has to be
+created once in your own Supabase account, and the migrations here applied to it.
+
+1. Create a project at [supabase.com](https://supabase.com). Note its **project ref** (the
+   subdomain of the API URL) and its **publishable/anon key** from *Settings > API*.
+
+2. Apply every migration, in numeric order. `migrations/` currently holds `0001` through
+   `0005`; later ones depend on earlier ones, so order matters. In the dashboard, open
+   *SQL Editor* and paste each file in turn, or bundle them into a single paste:
+
+```bash
+cat supabase/migrations/*.sql > /tmp/comot-setup.sql   # 0001..0005, glob order is numeric
+```
+
+   With the Supabase CLI instead of the dashboard:
 
 ```bash
 npm i -g supabase
@@ -21,13 +37,27 @@ supabase link --project-ref <your-project-ref>
 supabase db push
 ```
 
+   A correct run leaves 20 tables, all with RLS enabled, plus 46 policies and 72 functions.
+   Verify with:
+
+```sql
+select count(*) as tables from pg_tables where schemaname = 'public';
+```
+
 3. Enable social providers (Google / Apple / Facebook) under **Authentication → Providers**, and add the app scheme `comot://` to the redirect allow-list for native OAuth.
-4. Copy the project URL and anon key into `apps/mobile/.env`:
+
+4. Point the app at the project by editing `apps/mobile/.env`:
 
 ```bash
 EXPO_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
-EXPO_PUBLIC_SUPABASE_ANON_KEY=<anon-key>
+EXPO_PUBLIC_SUPABASE_ANON_KEY=<publishable-key>
 ```
+
+   Committing that change redeploys the web app against the new project. These two values
+   are public by design and safe to commit; the secret service-role key never belongs here.
+
+5. Optionally enable the `pg_cron` extension under *Database > Extensions* to activate the
+   daily fee reminders in `0005_notifications.sql`. Everything else works without it.
 
 ## Free-tier projects pause when idle
 
@@ -42,11 +72,28 @@ re-apply every migration in order.
 
 ## Tests
 
-`tests/` contains a stubbed Supabase auth environment (`setup.sql`) and a functional smoke test (`smoke.sql`) covering signup triggers, building creation, the join/approval flow, cross-building isolation, and committee handover. They run against plain PostgreSQL 16 — locally or in CI (`.github/workflows/ci.yml`):
+`tests/` contains a stubbed Supabase auth environment (`setup.sql`) plus one functional smoke
+suite per phase, covering signup triggers, building creation, the join/approval flow,
+cross-building isolation, committee handover, chat, faults, events, polls, budget, vendor
+matching, and notification triggers. Every suite asserts isolation between buildings, so a
+regression in an RLS policy fails the build.
+
+They run against plain PostgreSQL 16, locally or in CI (`.github/workflows/ci.yml`). This is
+also the quickest way to confirm a migration set applies cleanly before touching a real
+project:
 
 ```bash
-psql -v ON_ERROR_STOP=1 -c "create database comot_test"
-psql -d comot_test -v ON_ERROR_STOP=1 -f tests/setup.sql -f migrations/0001_init.sql -f tests/smoke.sql
+# Dropping first keeps this re-runnable: setup.sql recreates the cluster-wide
+# app_user role, which cannot be dropped while an old test database still
+# references it.
+psql -v ON_ERROR_STOP=1 -c "drop database if exists comot_test" -c "create database comot_test"
+psql -d comot_test -v ON_ERROR_STOP=1 \
+  -f tests/setup.sql \
+  -f migrations/0001_init.sql -f migrations/0002_chat_faults.sql \
+  -f migrations/0003_events_polls_budget.sql -f migrations/0004_vendors.sql \
+  -f migrations/0005_notifications.sql \
+  -f tests/smoke.sql -f tests/smoke2.sql -f tests/smoke3.sql \
+  -f tests/smoke4.sql -f tests/smoke5.sql
 ```
 
 ## RPC surface (Phase 1)
