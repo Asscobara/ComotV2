@@ -2,22 +2,17 @@ import type { FaultBooking, FaultStatus, FaultUpdateWithAuthor, FaultWithReporte
 import { Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Platform, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { CATEGORY_GLYPHS, FaultStatusTag } from '@/components/fault-bits';
 import { Button, Card, Screen, SectionTitle, Tag, TextField } from '@/components/ui';
 import { useAuth } from '@/lib/auth';
+import { useErrorAlert } from '@/lib/errors';
 import { addFaultNote, fetchFault, fetchFaultUpdates, updateFaultStatus } from '@/lib/faults';
 import { bookVendor, fetchBookingForFault, matchVendors } from '@/lib/vendors';
 import { colors, spacing, typography } from '@/theme';
 
 type BookingWithVendor = FaultBooking & { vendor: Pick<Vendor, 'business_name' | 'phone' | 'city'> | null };
-
-function notifyError(fallback: string, e: unknown) {
-  const msg = e instanceof Error ? e.message : fallback;
-  if (Platform.OS === 'web') window.alert(msg);
-  else Alert.alert(msg);
-}
 
 const NEXT_ACTIONS: Partial<Record<FaultStatus, { next: FaultStatus; key: string }[]>> = {
   reported: [{ next: 'in_progress', key: 'faults.markInProgress' }],
@@ -27,6 +22,7 @@ const NEXT_ACTIONS: Partial<Record<FaultStatus, { next: FaultStatus; key: string
 
 export default function FaultDetailScreen() {
   const { t } = useTranslation();
+  const notifyError = useErrorAlert();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { membership } = useAuth();
   const isCommittee = membership?.role === 'committee';
@@ -49,9 +45,9 @@ export default function FaultDetailScreen() {
       setUpdates(u);
       setBooking(b);
     } catch (e) {
-      notifyError(t('common.error'), e);
+      notifyError(e);
     }
-  }, [id, t]);
+  }, [id, notifyError]);
 
   useFocusEffect(
     useCallback(() => {
@@ -66,7 +62,7 @@ export default function FaultDetailScreen() {
       setNote('');
       await load();
     } catch (e) {
-      notifyError(t('common.error'), e);
+      notifyError(e);
     } finally {
       setBusy(false);
     }
@@ -80,7 +76,7 @@ export default function FaultDetailScreen() {
       setNote('');
       await load();
     } catch (e) {
-      notifyError(t('common.error'), e);
+      notifyError(e);
     } finally {
       setBusy(false);
     }
@@ -91,7 +87,7 @@ export default function FaultDetailScreen() {
     try {
       setMatches(await matchVendors(id));
     } catch (e) {
-      notifyError(t('common.error'), e);
+      notifyError(e);
     } finally {
       setBusy(false);
     }
@@ -104,7 +100,7 @@ export default function FaultDetailScreen() {
       setMatches(null);
       await load();
     } catch (e) {
-      notifyError(t('common.error'), e);
+      notifyError(e);
     } finally {
       setBusy(false);
     }

@@ -13,7 +13,9 @@
     "refresh": "רענון",
     "notConfigured": "Supabase עדיין לא מוגדר — ראו supabase/README.md",
     "comingSoon": "בקרוב",
-    "comingSoonBody": "המסך הזה יגיע בשלב הבא של הפיתוח."
+    "comingSoonBody": "המסך הזה יגיע בשלב הבא של הפיתוח.",
+    "offlineTitle": "לא ניתן להתחבר לשרת",
+    "offlineBody": "ComOt לא הצליחה להתחבר לשרת. בדקו את חיבור האינטרנט ונסו שוב — אם התקלה נמשכת, ייתכן שפרויקט ה-Supabase מושהה."
   },
   "auth": {
     "welcome": "ברוכים הבאים",

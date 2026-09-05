@@ -1,23 +1,17 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Platform, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { Banner, Button, Card, Screen, TextField } from '@/components/ui';
 import { Logo } from '@/components/logo';
 import { useAuth, type SocialProvider } from '@/lib/auth';
+import { alertBox, useErrorAlert } from '@/lib/errors';
 import { isSupabaseConfigured } from '@/lib/supabase';
 import { colors, spacing, typography } from '@/theme';
 
-function notify(title: string, message?: string) {
-  if (Platform.OS === 'web') {
-    window.alert(message ? `${title}\n${message}` : title);
-  } else {
-    Alert.alert(title, message);
-  }
-}
-
 export default function SignInScreen() {
   const { t } = useTranslation();
+  const notifyError = useErrorAlert();
   const { signInWithPassword, signUpWithPassword, signInWithProvider } = useAuth();
 
   const [mode, setMode] = useState<'signIn' | 'signUp'>('signIn');
@@ -33,10 +27,10 @@ export default function SignInScreen() {
         await signInWithPassword(email, password);
       } else {
         const { needsConfirmation } = await signUpWithPassword(email, password, fullName);
-        if (needsConfirmation) notify(t('auth.checkEmail'));
+        if (needsConfirmation) alertBox(t('auth.checkEmail'));
       }
     } catch (e) {
-      notify(t('common.error'), e instanceof Error ? e.message : undefined);
+      notifyError(e);
     } finally {
       setBusy(false);
     }
@@ -46,7 +40,7 @@ export default function SignInScreen() {
     try {
       await signInWithProvider(provider);
     } catch (e) {
-      notify(t('common.error'), e instanceof Error ? e.message : undefined);
+      notifyError(e);
     }
   };
 
