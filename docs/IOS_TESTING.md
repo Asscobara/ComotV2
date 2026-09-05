@@ -172,6 +172,22 @@ production build. You will not hit "this build number already exists" on upload.
 
 ---
 
+## Troubleshooting
+
+**"Can't reach the server" / "server can't be found"** — the app loaded but the backend did
+not answer. The most common cause by far is a paused Supabase project: free projects pause
+after about a week of inactivity, and a paused project stops resolving in DNS. Restore it
+from the Supabase dashboard; see [`supabase/README.md`](../supabase/README.md). To confirm
+this is the cause, check whether the API hostname resolves at all:
+
+```bash
+curl -sS -o /dev/null -w '%{http_code}\n' https://<project-ref>.supabase.co/rest/v1/
+```
+
+A `Could not resolve host` error means the project is paused or deleted. Note that the
+home-screen web app and the landing page are static files served by GitHub Pages, so they
+keep working even when the backend is down — a loading app does not mean a healthy backend.
+
 ## Notes
 
 - **Supabase configuration** is read from `apps/mobile/.env`, which is committed and holds
