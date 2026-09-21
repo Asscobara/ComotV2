@@ -28,6 +28,10 @@ enabled = true
 # Expo's web dev server, which is also where OAuth is allowed to redirect back to.
 site_url = "http://localhost:8081"
 additional_redirect_urls = ["http://localhost:8081", "comot://"]
+# The seeded `test` account uses a 4-character password. Supabase only enforces
+# this minimum on sign-up and password changes, not on sign-in, but lowering it
+# here keeps the local stack consistent with the seed either way.
+minimum_password_length = 4
 
 [auth.email]
 enable_signup = true

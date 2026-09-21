@@ -1,43 +1,55 @@
 -- Demo data for local development, applied automatically by `supabase db reset`.
 --
 -- The point is to make the app testable the moment it starts: a populated
--- building, a committee account to sign in as, and something to look at on every
--- screen — including one pending tenant so the approval flow has a subject and
--- one unpaid apartment so the budget screen is not all green.
+-- building, accounts to sign in as, and something worth looking at on every
+-- screen — including the awkward states you would otherwise have to construct by
+-- hand (a pending tenant, unpaid fees, a fault already in progress, a closed
+-- poll, an inactive vendor).
 --
--- Every account uses the password `comot1234`.
+-- Passwords: `comot1234` for every account except `test`, which is `1234`.
 --
--- IDs are fixed rather than generated so that docs can name them and so re-running
--- a reset produces byte-identical data.
+-- IDs are fixed rather than generated so docs can name them and so a reset
+-- produces byte-identical data.
 --
 -- Never load this into a real project: it writes directly to auth.users, which
 -- bypasses sign-up, and the passwords are public.
 
 -- ============================================================
--- Accounts. public.profiles rows are created by the
--- on_auth_user_created trigger, so they are not inserted here.
+-- Accounts. public.profiles rows come from the on_auth_user_created
+-- trigger, so they are not inserted here.
 -- ============================================================
 
 insert into auth.users (
   instance_id, id, aud, role, email, encrypted_password,
   email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at
 )
-values
-  ('00000000-0000-0000-0000-000000000000', 'a0000000-0000-4000-8000-000000000001',
-   'authenticated', 'authenticated', 'dana@comot.test', crypt('comot1234', gen_salt('bf')),
-   now(), '{"provider":"email","providers":["email"]}', '{"full_name":"דנה כהן"}', now(), now()),
-  ('00000000-0000-0000-0000-000000000000', 'a0000000-0000-4000-8000-000000000002',
-   'authenticated', 'authenticated', 'yossi@comot.test', crypt('comot1234', gen_salt('bf')),
-   now(), '{"provider":"email","providers":["email"]}', '{"full_name":"יוסי לוי"}', now(), now()),
-  ('00000000-0000-0000-0000-000000000000', 'a0000000-0000-4000-8000-000000000003',
-   'authenticated', 'authenticated', 'maya@comot.test', crypt('comot1234', gen_salt('bf')),
-   now(), '{"provider":"email","providers":["email"]}', '{"full_name":"מאיה בר"}', now(), now()),
-  ('00000000-0000-0000-0000-000000000000', 'a0000000-0000-4000-8000-000000000004',
-   'authenticated', 'authenticated', 'avi@comot.test', crypt('comot1234', gen_salt('bf')),
-   now(), '{"provider":"email","providers":["email"]}', '{"full_name":"אבי מזרחי"}', now(), now()),
-  ('00000000-0000-0000-0000-000000000000', 'a0000000-0000-4000-8000-000000000005',
-   'authenticated', 'authenticated', 'eli@comot.test', crypt('comot1234', gen_salt('bf')),
-   now(), '{"provider":"email","providers":["email"]}', '{"full_name":"אלי אינסטלטור"}', now(), now());
+select
+  '00000000-0000-0000-0000-000000000000',
+  d.id, 'authenticated', 'authenticated', d.email,
+  crypt(d.password, gen_salt('bf')),
+  now(), '{"provider":"email","providers":["email"]}',
+  jsonb_build_object('full_name', d.full_name),
+  now(), now()
+from (values
+  -- Residents of הברושים 12
+  ('a0000000-0000-4000-8000-000000000001'::uuid, 'dana@comot.test',  'comot1234', 'דנה כהן'),
+  ('a0000000-0000-4000-8000-000000000002'::uuid, 'test@comot.test',  '1234',      'test'),
+  ('a0000000-0000-4000-8000-000000000003'::uuid, 'yossi@comot.test', 'comot1234', 'יוסי לוי'),
+  ('a0000000-0000-4000-8000-000000000004'::uuid, 'maya@comot.test',  'comot1234', 'מאיה בר'),
+  ('a0000000-0000-4000-8000-000000000005'::uuid, 'avi@comot.test',   'comot1234', 'אבי מזרחי'),
+  ('a0000000-0000-4000-8000-000000000006'::uuid, 'noa@comot.test',   'comot1234', 'נועה שגב'),
+  ('a0000000-0000-4000-8000-000000000007'::uuid, 'ronen@comot.test', 'comot1234', 'רונן אבטליון'),
+  -- Service providers
+  ('a0000000-0000-4000-8000-000000000011'::uuid, 'eli@comot.test',     'comot1234', 'אלי אינסטלטור'),
+  ('a0000000-0000-4000-8000-000000000012'::uuid, 'maor@comot.test',    'comot1234', 'מאור חשמלאי'),
+  ('a0000000-0000-4000-8000-000000000013'::uuid, 'gani@comot.test',    'comot1234', 'גני הגנן'),
+  ('a0000000-0000-4000-8000-000000000014'::uuid, 'shachar@comot.test', 'comot1234', 'שחר מעליות'),
+  ('a0000000-0000-4000-8000-000000000015'::uuid, 'carmel@comot.test',  'comot1234', 'כרמל ניקיון'),
+  ('a0000000-0000-4000-8000-000000000016'::uuid, 'avni@comot.test',    'comot1234', 'אבני גגות'),
+  ('a0000000-0000-4000-8000-000000000017'::uuid, 'handy@comot.test',   'comot1234', 'דני הנדימן'),
+  ('a0000000-0000-4000-8000-000000000018'::uuid, 'shifra@comot.test',  'comot1234', 'שפרה אינסטלציה'),
+  ('a0000000-0000-4000-8000-000000000019'::uuid, 'bar@comot.test',     'comot1234', 'בר חשמל ותקשורת')
+) as d(id, email, password, full_name);
 
 -- GoTrue resolves a password login through auth.identities, so every account needs one.
 insert into auth.identities (user_id, provider_id, provider, identity_data, last_sign_in_at, created_at, updated_at)
@@ -54,12 +66,13 @@ update public.profiles set phone = '050-1234567', preferred_language = 'he';
 
 insert into public.buildings (
   id, name, address, city, floors, apartments_count,
-  invite_code, fee_amount, fee_due_day, fee_frequency, created_by
+  invite_code, fee_amount, fee_due_day, fee_frequency, created_by, notes
 )
 values (
   'b0000000-0000-4000-8000-000000000001',
   'הברושים 12', 'רחוב הברושים 12', 'תל אביב', 4, 8,
-  'comot123', 250.00, 10, 'monthly', 'a0000000-0000-4000-8000-000000000001'
+  'comot123', 250.00, 10, 'monthly', 'a0000000-0000-4000-8000-000000000001',
+  'בניין משנת 1998, מעלית אחת, חניון תת-קרקעי ולובי מחודש.'
 );
 
 -- Two apartments per floor across four floors.
@@ -72,78 +85,127 @@ select
 from generate_series(1, 8) as n;
 
 -- ============================================================
--- Memberships. Avi is left pending so the committee has a request to act on.
+-- Memberships. Two committee members (a real ועד usually has several),
+-- a mix of owners and renters, one pending request, one vacant apartment.
 -- ============================================================
 
 insert into public.memberships (building_id, user_id, apartment_id, role, tenant_type, status)
 values
   ('b0000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000001',
-   'c0000000-0000-4000-8000-000000000001', 'committee', 'owner', 'active'),
+   'c0000000-0000-4000-8000-000000000001', 'committee', 'owner',  'active'),
   ('b0000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000002',
-   'c0000000-0000-4000-8000-000000000002', 'tenant', 'owner', 'active'),
+   'c0000000-0000-4000-8000-000000000002', 'committee', 'owner',  'active'),
   ('b0000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000003',
-   'c0000000-0000-4000-8000-000000000003', 'tenant', 'renter', 'active'),
+   'c0000000-0000-4000-8000-000000000003', 'tenant',    'owner',  'active'),
   ('b0000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000004',
-   'c0000000-0000-4000-8000-000000000004', 'tenant', 'owner', 'pending');
+   'c0000000-0000-4000-8000-000000000004', 'tenant',    'renter', 'active'),
+  ('b0000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000006',
+   'c0000000-0000-4000-8000-000000000006', 'tenant',    'renter', 'active'),
+  ('b0000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000007',
+   'c0000000-0000-4000-8000-000000000007', 'tenant',    'owner',  'active'),
+  -- Left pending so the approval flow has a subject.
+  ('b0000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000005',
+   'c0000000-0000-4000-8000-000000000005', 'tenant',    'owner',  'pending');
 
 -- ============================================================
--- Chat: a building-wide channel with a short conversation
+-- Chat: a building-wide channel plus a direct message
 -- ============================================================
 
 insert into public.conversations (id, building_id, kind, name, created_by)
-values ('d0000000-0000-4000-8000-000000000001', 'b0000000-0000-4000-8000-000000000001',
-        'channel', 'כללי', 'a0000000-0000-4000-8000-000000000001');
+values
+  ('d0000000-0000-4000-8000-000000000001', 'b0000000-0000-4000-8000-000000000001',
+   'channel', 'כללי', 'a0000000-0000-4000-8000-000000000001'),
+  ('d0000000-0000-4000-8000-000000000002', 'b0000000-0000-4000-8000-000000000001',
+   'dm', null, 'a0000000-0000-4000-8000-000000000001');
+
+-- Every active member is in the building channel.
+insert into public.conversation_members (conversation_id, user_id)
+select 'd0000000-0000-4000-8000-000000000001', m.user_id
+from public.memberships m
+where m.building_id = 'b0000000-0000-4000-8000-000000000001' and m.status = 'active';
 
 insert into public.conversation_members (conversation_id, user_id)
 values
-  ('d0000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000001'),
-  ('d0000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000002'),
-  ('d0000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000003');
+  ('d0000000-0000-4000-8000-000000000002', 'a0000000-0000-4000-8000-000000000001'),
+  ('d0000000-0000-4000-8000-000000000002', 'a0000000-0000-4000-8000-000000000003');
 
 insert into public.messages (conversation_id, building_id, sender_id, body, created_at)
 values
   ('d0000000-0000-4000-8000-000000000001', 'b0000000-0000-4000-8000-000000000001',
-   'a0000000-0000-4000-8000-000000000001', 'שלום לכולם! אסיפת דיירים ביום שלישי הקרוב.', now() - interval '2 days'),
+   'a0000000-0000-4000-8000-000000000001', 'שלום לכולם! אסיפת דיירים ביום שלישי הקרוב בשעה 20:00 בלובי.', now() - interval '3 days'),
   ('d0000000-0000-4000-8000-000000000001', 'b0000000-0000-4000-8000-000000000001',
-   'a0000000-0000-4000-8000-000000000002', 'מעולה, אהיה שם.', now() - interval '2 days' + interval '12 minutes'),
+   'a0000000-0000-4000-8000-000000000003', 'מעולה, אהיה שם.', now() - interval '3 days' + interval '14 minutes'),
   ('d0000000-0000-4000-8000-000000000001', 'b0000000-0000-4000-8000-000000000001',
-   'a0000000-0000-4000-8000-000000000003', 'אפשר להוסיף את נושא החניה?', now() - interval '1 day');
+   'a0000000-0000-4000-8000-000000000004', 'אפשר להוסיף את נושא החניה לסדר היום?', now() - interval '2 days'),
+  ('d0000000-0000-4000-8000-000000000001', 'b0000000-0000-4000-8000-000000000001',
+   'a0000000-0000-4000-8000-000000000002', 'הוספתי. מישהו יודע מה קורה עם המעלית?', now() - interval '2 days' + interval '40 minutes'),
+  ('d0000000-0000-4000-8000-000000000001', 'b0000000-0000-4000-8000-000000000001',
+   'a0000000-0000-4000-8000-000000000007', 'דיווחתי על זה בתקלות, טכנאי אמור להגיע.', now() - interval '1 day'),
+  ('d0000000-0000-4000-8000-000000000001', 'b0000000-0000-4000-8000-000000000001',
+   'a0000000-0000-4000-8000-000000000006', 'תודה! ובאותו עניין — הנורה בקומה 2 שרופה.', now() - interval '6 hours'),
+  ('d0000000-0000-4000-8000-000000000002', 'b0000000-0000-4000-8000-000000000001',
+   'a0000000-0000-4000-8000-000000000003', 'דנה, שילמתי את דמי הוועד בהעברה בנקאית.', now() - interval '20 hours'),
+  ('d0000000-0000-4000-8000-000000000002', 'b0000000-0000-4000-8000-000000000001',
+   'a0000000-0000-4000-8000-000000000001', 'קיבלתי, תודה. אסמן במערכת.', now() - interval '19 hours');
 
 -- ============================================================
--- Faults, one open and one already in progress
+-- Faults, spread across categories and every status
 -- ============================================================
 
-insert into public.faults (id, building_id, reporter_id, category, title, description, location, status, created_at)
+insert into public.faults (id, building_id, reporter_id, category, title, description, location, status, created_at, resolved_at)
 values
   ('e0000000-0000-4000-8000-000000000001', 'b0000000-0000-4000-8000-000000000001',
-   'a0000000-0000-4000-8000-000000000002', 'elevator', 'המעלית נתקעת בקומה 3',
-   'המעלית עוצרת בין קומות ודלתותיה נפתחות באיחור.', 'לובי', 'reported', now() - interval '3 days'),
+   'a0000000-0000-4000-8000-000000000007', 'elevator', 'המעלית נתקעת בקומה 3',
+   'המעלית עוצרת בין קומות והדלתות נפתחות באיחור.', 'לובי', 'reported', now() - interval '2 days', null),
   ('e0000000-0000-4000-8000-000000000002', 'b0000000-0000-4000-8000-000000000001',
-   'a0000000-0000-4000-8000-000000000003', 'plumbing', 'נזילה בחניון',
-   'נזילת מים מהצינור בתקרת החניון.', 'חניון', 'in_progress', now() - interval '6 days');
+   'a0000000-0000-4000-8000-000000000004', 'plumbing', 'נזילה בחניון',
+   'נזילת מים מהצינור בתקרת החניון, ליד החניה של דירה 4.', 'חניון', 'in_progress', now() - interval '6 days', null),
+  ('e0000000-0000-4000-8000-000000000003', 'b0000000-0000-4000-8000-000000000001',
+   'a0000000-0000-4000-8000-000000000006', 'electricity', 'נורה שרופה בחדר מדרגות',
+   'הנורה בקומה 2 לא נדלקת.', 'חדר מדרגות, קומה 2', 'reported', now() - interval '1 day', null),
+  ('e0000000-0000-4000-8000-000000000004', 'b0000000-0000-4000-8000-000000000001',
+   'a0000000-0000-4000-8000-000000000001', 'cleaning', 'הלובי לא נוקה בשבוע שעבר',
+   'חברת הניקיון דילגה על הלובי והמדרגות.', 'לובי', 'resolved', now() - interval '12 days', now() - interval '9 days'),
+  ('e0000000-0000-4000-8000-000000000005', 'b0000000-0000-4000-8000-000000000001',
+   'a0000000-0000-4000-8000-000000000003', 'gardening', 'גיזום העץ בחצר',
+   'הענפים נוגעים בחלונות קומה 1.', 'חצר אחורית', 'closed', now() - interval '30 days', now() - interval '24 days');
 
 insert into public.fault_updates (fault_id, building_id, author_id, note, status, created_at)
 values
   ('e0000000-0000-4000-8000-000000000002', 'b0000000-0000-4000-8000-000000000001',
-   'a0000000-0000-4000-8000-000000000001', 'הוזמן אינסטלטור, מטפל השבוע.', 'in_progress', now() - interval '4 days');
+   'a0000000-0000-4000-8000-000000000001', 'הוזמן אינסטלטור, מטפל השבוע.', 'in_progress', now() - interval '4 days'),
+  ('e0000000-0000-4000-8000-000000000004', 'b0000000-0000-4000-8000-000000000001',
+   'a0000000-0000-4000-8000-000000000002', 'דיברתי עם חברת הניקיון, הם השלימו את החוב.', 'resolved', now() - interval '9 days'),
+  ('e0000000-0000-4000-8000-000000000005', 'b0000000-0000-4000-8000-000000000001',
+   'a0000000-0000-4000-8000-000000000001', 'הגיזום בוצע.', 'closed', now() - interval '24 days');
 
 -- ============================================================
--- Events, plus an open poll attached to the upcoming meeting
+-- Events, plus an open poll on the upcoming meeting and one already closed
 -- ============================================================
 
 insert into public.events (id, building_id, kind, title, description, location, starts_at, recurrence, created_by)
 values
   ('f0000000-0000-4000-8000-000000000001', 'b0000000-0000-4000-8000-000000000001',
-   'meeting', 'אסיפת דיירים', 'סיכום שנה ותקציב לשנה הבאה.', 'לובי הבניין',
+   'meeting', 'אסיפת דיירים', 'סיכום שנה, תקציב לשנה הבאה ונושא החניה.', 'לובי הבניין',
    now() + interval '4 days', 'none', 'a0000000-0000-4000-8000-000000000001'),
   ('f0000000-0000-4000-8000-000000000002', 'b0000000-0000-4000-8000-000000000001',
    'payment', 'גביית דמי ועד', null, null,
-   date_trunc('month', now()) + interval '9 days', 'monthly', 'a0000000-0000-4000-8000-000000000001');
+   date_trunc('month', now()) + interval '9 days', 'monthly', 'a0000000-0000-4000-8000-000000000001'),
+  ('f0000000-0000-4000-8000-000000000003', 'b0000000-0000-4000-8000-000000000001',
+   'maintenance', 'בדיקת מעלית תקופתית', 'בדיקת בטיחות שנתית של המעלית.', 'לובי',
+   now() + interval '11 days', 'yearly', 'a0000000-0000-4000-8000-000000000002'),
+  ('f0000000-0000-4000-8000-000000000004', 'b0000000-0000-4000-8000-000000000001',
+   'other', 'ניקיון חצר משותף', 'מפגש דיירים לסידור החצר.', 'חצר אחורית',
+   now() - interval '14 days', 'none', 'a0000000-0000-4000-8000-000000000001');
 
-insert into public.polls (id, building_id, event_id, question, is_anonymous, created_by, created_at)
-values ('11110000-0000-4000-8000-000000000001', 'b0000000-0000-4000-8000-000000000001',
-        'f0000000-0000-4000-8000-000000000001', 'האם לצבוע את חדר המדרגות?', true,
-        'a0000000-0000-4000-8000-000000000001', now() - interval '1 day');
+insert into public.polls (id, building_id, event_id, question, is_anonymous, status, created_by, created_at)
+values
+  ('11110000-0000-4000-8000-000000000001', 'b0000000-0000-4000-8000-000000000001',
+   'f0000000-0000-4000-8000-000000000001', 'האם לצבוע את חדר המדרגות?', true, 'open',
+   'a0000000-0000-4000-8000-000000000001', now() - interval '2 days'),
+  ('11110000-0000-4000-8000-000000000002', 'b0000000-0000-4000-8000-000000000001',
+   null, 'להחליף את חברת הניקיון?', false, 'closed',
+   'a0000000-0000-4000-8000-000000000001', now() - interval '20 days');
 
 insert into public.poll_options (id, poll_id, building_id, label, position)
 values
@@ -152,49 +214,109 @@ values
   ('22220000-0000-4000-8000-000000000002', '11110000-0000-4000-8000-000000000001',
    'b0000000-0000-4000-8000-000000000001', 'כן, בשנה הבאה', 2),
   ('22220000-0000-4000-8000-000000000003', '11110000-0000-4000-8000-000000000001',
-   'b0000000-0000-4000-8000-000000000001', 'לא', 3);
+   'b0000000-0000-4000-8000-000000000001', 'לא', 3),
+  ('22220000-0000-4000-8000-000000000004', '11110000-0000-4000-8000-000000000002',
+   'b0000000-0000-4000-8000-000000000001', 'כן, להחליף', 1),
+  ('22220000-0000-4000-8000-000000000005', '11110000-0000-4000-8000-000000000002',
+   'b0000000-0000-4000-8000-000000000001', 'לא, להישאר', 2);
 
--- Dana has not voted, so the poll still shows as actionable when signed in as her.
+-- Dana and test have not voted on the open poll, so it is still actionable as them.
 insert into public.poll_votes (poll_id, option_id, user_id, building_id)
 values
   ('11110000-0000-4000-8000-000000000001', '22220000-0000-4000-8000-000000000001',
-   'a0000000-0000-4000-8000-000000000002', 'b0000000-0000-4000-8000-000000000001'),
+   'a0000000-0000-4000-8000-000000000003', 'b0000000-0000-4000-8000-000000000001'),
   ('11110000-0000-4000-8000-000000000001', '22220000-0000-4000-8000-000000000003',
-   'a0000000-0000-4000-8000-000000000003', 'b0000000-0000-4000-8000-000000000001');
+   'a0000000-0000-4000-8000-000000000004', 'b0000000-0000-4000-8000-000000000001'),
+  ('11110000-0000-4000-8000-000000000001', '22220000-0000-4000-8000-000000000001',
+   'a0000000-0000-4000-8000-000000000006', 'b0000000-0000-4000-8000-000000000001'),
+  ('11110000-0000-4000-8000-000000000002', '22220000-0000-4000-8000-000000000004',
+   'a0000000-0000-4000-8000-000000000003', 'b0000000-0000-4000-8000-000000000001'),
+  ('11110000-0000-4000-8000-000000000002', '22220000-0000-4000-8000-000000000004',
+   'a0000000-0000-4000-8000-000000000007', 'b0000000-0000-4000-8000-000000000001'),
+  ('11110000-0000-4000-8000-000000000002', '22220000-0000-4000-8000-000000000005',
+   'a0000000-0000-4000-8000-000000000004', 'b0000000-0000-4000-8000-000000000001');
 
 -- ============================================================
--- Budget: collected fees plus expenses, leaving a visible balance
+-- Budget: a few months of collected fees and expenses
 -- ============================================================
 
 insert into public.budget_entries (building_id, kind, category, title, amount, entry_date, created_by)
 values
-  ('b0000000-0000-4000-8000-000000000001', 'income', 'fee', 'דמי ועד — חודש קודם', 1750.00,
-   current_date - 30, 'a0000000-0000-4000-8000-000000000001'),
-  ('b0000000-0000-4000-8000-000000000001', 'expense', 'cleaning', 'חברת ניקיון', 600.00,
-   current_date - 25, 'a0000000-0000-4000-8000-000000000001'),
-  ('b0000000-0000-4000-8000-000000000001', 'expense', 'elevator', 'תחזוקת מעלית', 450.00,
-   current_date - 20, 'a0000000-0000-4000-8000-000000000001'),
-  ('b0000000-0000-4000-8000-000000000001', 'expense', 'electricity', 'חשמל לובי', 180.00,
-   current_date - 10, 'a0000000-0000-4000-8000-000000000001');
+  ('b0000000-0000-4000-8000-000000000001', 'income',  'fee',                'דמי ועד — חודש קודם',        1750.00, current_date - 30, 'a0000000-0000-4000-8000-000000000001'),
+  ('b0000000-0000-4000-8000-000000000001', 'income',  'fee',                'דמי ועד — לפני חודשיים',     1500.00, current_date - 60, 'a0000000-0000-4000-8000-000000000001'),
+  ('b0000000-0000-4000-8000-000000000001', 'income',  'special_collection', 'גבייה מיוחדת — צביעת לובי',  2400.00, current_date - 45, 'a0000000-0000-4000-8000-000000000001'),
+  ('b0000000-0000-4000-8000-000000000001', 'income',  'other_income',       'החזר מחברת הביטוח',           380.00, current_date - 15, 'a0000000-0000-4000-8000-000000000002'),
+  ('b0000000-0000-4000-8000-000000000001', 'expense', 'cleaning',           'חברת ניקיון',                 600.00, current_date - 25, 'a0000000-0000-4000-8000-000000000001'),
+  ('b0000000-0000-4000-8000-000000000001', 'expense', 'elevator',           'תחזוקת מעלית',                450.00, current_date - 20, 'a0000000-0000-4000-8000-000000000001'),
+  ('b0000000-0000-4000-8000-000000000001', 'expense', 'electricity',        'חשמל לובי וחניון',            180.00, current_date - 10, 'a0000000-0000-4000-8000-000000000001'),
+  ('b0000000-0000-4000-8000-000000000001', 'expense', 'gardening',          'גיזום וטיפוח חצר',            320.00, current_date - 24, 'a0000000-0000-4000-8000-000000000002'),
+  ('b0000000-0000-4000-8000-000000000001', 'expense', 'repair',             'תיקון נזילה בחניון',          890.00, current_date - 5,  'a0000000-0000-4000-8000-000000000001'),
+  ('b0000000-0000-4000-8000-000000000001', 'expense', 'maintenance',        'החלפת נורות בחדר מדרגות',     140.00, current_date - 3,  'a0000000-0000-4000-8000-000000000002');
 
--- Apartments 1-3 have paid this period; the rest have not, so the fee screen has
--- both states to show.
+-- Four of eight apartments have paid this period, so the fee screen shows both
+-- states; apartment 3 also has last month recorded.
 insert into public.fee_payments (building_id, apartment_id, period, amount, marked_by)
-select 'b0000000-0000-4000-8000-000000000001',
-       ('c0000000-0000-4000-8000-00000000000' || n)::uuid,
-       to_char(now(), 'YYYY-MM'), 250.00,
-       'a0000000-0000-4000-8000-000000000001'
-from generate_series(1, 3) as n;
+values
+  ('b0000000-0000-4000-8000-000000000001', 'c0000000-0000-4000-8000-000000000001', to_char(now(), 'YYYY-MM'), 250.00, 'a0000000-0000-4000-8000-000000000001'),
+  ('b0000000-0000-4000-8000-000000000001', 'c0000000-0000-4000-8000-000000000002', to_char(now(), 'YYYY-MM'), 250.00, 'a0000000-0000-4000-8000-000000000001'),
+  ('b0000000-0000-4000-8000-000000000001', 'c0000000-0000-4000-8000-000000000003', to_char(now(), 'YYYY-MM'), 250.00, 'a0000000-0000-4000-8000-000000000001'),
+  ('b0000000-0000-4000-8000-000000000001', 'c0000000-0000-4000-8000-000000000006', to_char(now(), 'YYYY-MM'), 250.00, 'a0000000-0000-4000-8000-000000000002'),
+  ('b0000000-0000-4000-8000-000000000001', 'c0000000-0000-4000-8000-000000000003', to_char(now() - interval '1 month', 'YYYY-MM'), 250.00, 'a0000000-0000-4000-8000-000000000001');
 
 -- ============================================================
--- Vendor marketplace: Eli signed up as a plumber, approved for this building
+-- Service providers: every fault category covered, several cities, a mix of
+-- in-the-book and not, one preferred, one inactive. match_vendors() ranks by
+-- preferred, then in-book, then same city as the building (תל אביב).
 -- ============================================================
 
-insert into public.vendors (id, user_id, business_name, categories, city, phone, about)
-values ('33330000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000005',
-        'אלי אינסטלציה', array['plumbing', 'general'], 'תל אביב', '050-7654321',
-        'אינסטלטור עם 15 שנות ניסיון, זמין לקריאות דחופות.');
+insert into public.vendors (id, user_id, business_name, categories, city, phone, about, is_active)
+values
+  ('33330000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000011',
+   'אלי אינסטלציה', array['plumbing', 'general'], 'תל אביב', '050-7654321',
+   'אינסטלטור עם 15 שנות ניסיון, זמין לקריאות דחופות 24/7.', true),
+  ('33330000-0000-4000-8000-000000000002', 'a0000000-0000-4000-8000-000000000012',
+   'מאור חשמל', array['electricity'], 'תל אביב', '052-1112233',
+   'חשמלאי מוסמך, עבודות תשתית ותאורת חוץ בבנייני מגורים.', true),
+  ('33330000-0000-4000-8000-000000000003', 'a0000000-0000-4000-8000-000000000013',
+   'ירוק בגן', array['gardening'], 'רמת גן', '054-2223344',
+   'תחזוקת גינות משותפות, גיזום עצים והשקיה אוטומטית.', true),
+  ('33330000-0000-4000-8000-000000000004', 'a0000000-0000-4000-8000-000000000014',
+   'מעליות שחר', array['elevator'], 'חולון', '03-5556677',
+   'שירות ותחזוקה למעליות, בדיקות בטיחות תקופתיות.', true),
+  ('33330000-0000-4000-8000-000000000005', 'a0000000-0000-4000-8000-000000000015',
+   'ניקיון כרמל', array['cleaning'], 'תל אביב', '053-3334455',
+   'ניקיון חדרי מדרגות, לובי וחניונים, פעמיים בשבוע.', true),
+  ('33330000-0000-4000-8000-000000000006', 'a0000000-0000-4000-8000-000000000016',
+   'גגות אבני', array['roofing'], 'פתח תקווה', '050-4445566',
+   'איטום גגות, טיפול ברטיבות ונזילות מהגג.', true),
+  ('33330000-0000-4000-8000-000000000007', 'a0000000-0000-4000-8000-000000000017',
+   'דני הנדימן', array['general', 'cleaning'], 'גבעתיים', '058-5556677',
+   'תיקונים קטנים בבניין: דלתות, מנעולים, צביעה ותליית שילוט.', true),
+  ('33330000-0000-4000-8000-000000000008', 'a0000000-0000-4000-8000-000000000018',
+   'שפרה אינסטלציה', array['plumbing', 'elevator'], 'בת ים', '050-6667788',
+   'פתיחת סתימות, תיקון נזילות ותחזוקת משאבות.', true),
+  -- Inactive on purpose: must not appear in matching results.
+  ('33330000-0000-4000-8000-000000000009', 'a0000000-0000-4000-8000-000000000019',
+   'בר חשמל ותקשורת', array['electricity', 'general'], 'ראשון לציון', '077-7778899',
+   'אינו פעיל כרגע.', false);
 
-insert into public.building_vendors (building_id, vendor_id, added_by)
-values ('b0000000-0000-4000-8000-000000000001', '33330000-0000-4000-8000-000000000001',
-        'a0000000-0000-4000-8000-000000000001');
+-- The building's own book of providers, with one marked preferred.
+insert into public.building_vendors (building_id, vendor_id, preferred, added_by)
+values
+  ('b0000000-0000-4000-8000-000000000001', '33330000-0000-4000-8000-000000000001', true,  'a0000000-0000-4000-8000-000000000001'),
+  ('b0000000-0000-4000-8000-000000000001', '33330000-0000-4000-8000-000000000002', false, 'a0000000-0000-4000-8000-000000000001'),
+  ('b0000000-0000-4000-8000-000000000001', '33330000-0000-4000-8000-000000000004', false, 'a0000000-0000-4000-8000-000000000002'),
+  ('b0000000-0000-4000-8000-000000000001', '33330000-0000-4000-8000-000000000005', false, 'a0000000-0000-4000-8000-000000000001');
+
+-- An open job: the plumbing fault already in progress was sent to Eli, who
+-- accepted it. fault_title/category/city are denormalized onto the booking so a
+-- vendor can see the job without being granted access to the building.
+insert into public.fault_bookings (
+  fault_id, building_id, vendor_id, status, fault_title, fault_category, city, created_by
+)
+select
+  f.id, f.building_id, '33330000-0000-4000-8000-000000000001', 'accepted',
+  f.title, f.category, b.city, 'a0000000-0000-4000-8000-000000000001'
+from public.faults f
+join public.buildings b on b.id = f.building_id
+where f.id = 'e0000000-0000-4000-8000-000000000002';
