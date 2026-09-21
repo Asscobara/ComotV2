@@ -98,11 +98,6 @@ export default function HomeScreen() {
     }
   };
 
-  const comingSoon = () => {
-    if (Platform.OS === 'web') window.alert(t('common.comingSoonBody'));
-    else Alert.alert(t('common.comingSoon'), t('common.comingSoonBody'));
-  };
-
   const goToFaults = () => router.push('/faults');
 
   return (
@@ -192,7 +187,7 @@ export default function HomeScreen() {
       <View style={styles.actionsGrid}>
         <QuickAction glyph="💬" label={t('tabs.chat')} onPress={() => router.push('/(tabs)/chat')} />
         <QuickAction glyph="⚠️" label={t('home.reportFault')} onPress={() => router.push('/faults/new')} />
-        <QuickAction glyph="💳" label={t('home.payments')} onPress={comingSoon} />
+        <QuickAction glyph="💳" label={t('home.payments')} onPress={() => router.push('/payments')} />
         <QuickAction glyph="📅" label={t('tabs.events')} onPress={() => router.push('/(tabs)/events')} />
       </View>
 

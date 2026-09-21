@@ -41,6 +41,7 @@ function RootNavigator() {
         <Stack.Screen name="faults" />
         <Stack.Screen name="events" />
         <Stack.Screen name="budget" />
+        <Stack.Screen name="payments" />
         <Stack.Screen name="reports" />
       </Stack.Protected>
       {/* registered after the home groups so it never becomes the initial screen */}

@@ -62,9 +62,6 @@ export async function addBudgetEntry(input: {
   if (error) throw error;
 }
 
-export function currentPeriod(): string {
-  return new Date().toISOString().slice(0, 7);
-}
 
 export async function fetchFeePayments(buildingId: string, period: string): Promise<FeePayment[]> {
   const { data, error } = await supabase
@@ -85,3 +82,20 @@ export async function markFeePaid(buildingId: string, apartmentId: string, perio
   });
   if (error) throw error;
 }
+
+/** Every recorded payment for one apartment, newest period first. */
+export async function fetchApartmentFeePayments(
+  buildingId: string,
+  apartmentId: string,
+): Promise<FeePayment[]> {
+  const { data, error } = await supabase
+    .from('fee_payments')
+    .select('*')
+    .eq('building_id', buildingId)
+    .eq('apartment_id', apartmentId)
+    .order('period', { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as FeePayment[];
+}
+
+export { buildFeeHistory, currentPeriod, feePeriodsForMember, type FeePeriod } from './fees';

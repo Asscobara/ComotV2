@@ -4,17 +4,11 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Platform, StyleSheet, Text, View } from 'react-native';
 
+import { DateTimeField } from '@/components/date-time-field';
 import { Button, Card, Screen, Segmented, TextField } from '@/components/ui';
 import { useAuth } from '@/lib/auth';
 import { createEvent } from '@/lib/events';
 import { spacing, typography } from '@/theme';
-
-function parseDateTime(value: string): Date | null {
-  const m = value.trim().match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{1,2}):(\d{2})$/);
-  if (!m) return null;
-  const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), Number(m[4]), Number(m[5]));
-  return Number.isNaN(d.getTime()) ? null : d;
-}
 
 export default function NewEventScreen() {
   const { t } = useTranslation();
@@ -25,15 +19,14 @@ export default function NewEventScreen() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
-  const [startsAt, setStartsAt] = useState('');
+  const [startsAt, setStartsAt] = useState<Date | null>(null);
   const [recurrence, setRecurrence] = useState<EventRecurrence>('none');
   const [busy, setBusy] = useState(false);
 
-  const parsed = parseDateTime(startsAt);
-  const valid = title.trim().length >= 2 && parsed !== null;
+  const valid = title.trim().length >= 2 && startsAt !== null;
 
   const submit = async () => {
-    if (!membership?.building || !parsed) return;
+    if (!membership?.building || !startsAt) return;
     setBusy(true);
     try {
       const id = await createEvent({
@@ -42,7 +35,7 @@ export default function NewEventScreen() {
         title,
         description,
         location,
-        startsAt: parsed,
+        startsAt,
         recurrence,
       });
       router.replace({ pathname: '/events/[id]', params: { id } });
@@ -72,12 +65,12 @@ export default function NewEventScreen() {
         <View style={{ height: spacing.md }} />
 
         <TextField label={t('events.eventTitle')} value={title} onChangeText={setTitle} />
-        <TextField
+        <DateTimeField
           label={t('events.startsAt')}
           value={startsAt}
-          onChangeText={setStartsAt}
-          placeholder={t('events.startsAtHint')}
-          error={startsAt.length > 0 && !parsed ? t('events.badDate') : null}
+          onChange={setStartsAt}
+          placeholder={t('events.pickDateTime')}
+          testID="event-starts-at"
         />
         <TextField label={t('events.location')} value={location} onChangeText={setLocation} />
         <TextField
