@@ -328,5 +328,15 @@
     "noApartment": "No apartment assigned",
     "noApartmentBody": "The house committee needs to assign you an apartment before fees can be tracked.",
     "collectFees": "💳 Collect fees from tenants"
+  },
+  "account": {
+    "section": "My account",
+    "delete": "Delete my account",
+    "deleteConfirm": "Delete",
+    "deleteExplainer": "Deleting your account removes your details, your building membership, your messages, the faults you reported and your votes. This cannot be undone.",
+    "deleteWarning": "Permanently delete your account? Your details, messages, faults and votes will be removed. This cannot be undone.",
+    "deleteWarningWithBuilding": "Permanently delete your account? You are the last member of {{buildings}}, so the building will be deleted too. This cannot be undone.",
+    "handoverNeeded": "Hand over the committee role first",
+    "handoverNeededBody": "You are the only committee member of {{buildings}}. Hand the committee role to another tenant before deleting your account, so the building is not left without one."
   }
 }

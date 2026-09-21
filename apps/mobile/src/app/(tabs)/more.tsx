@@ -4,14 +4,21 @@ import { useTranslation } from 'react-i18next';
 import { Alert, Platform, StyleSheet, Text, View } from 'react-native';
 
 import { Button, Card, Screen, SectionTitle, Segmented, TextField } from '@/components/ui';
+import {
+  deleteOwnAccount,
+  fetchAccountDeletionPreview,
+  isHandoverRequired,
+} from '@/lib/account';
 import { updateProfile } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { alertBox, useErrorAlert } from '@/lib/errors';
 import { setLanguage, type AppLanguage } from '@/lib/i18n';
 import { colors, spacing, typography } from '@/theme';
 
 export default function MoreScreen() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
+  const notifyError = useErrorAlert();
   const { profile, membership, refresh, signOut } = useAuth();
 
   const building = membership?.building ?? null;
@@ -19,6 +26,7 @@ export default function MoreScreen() {
 
   const [fullName, setFullName] = useState(profile?.full_name ?? '');
   const [busy, setBusy] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const saveProfile = async () => {
     setBusy(true);
@@ -40,6 +48,49 @@ export default function MoreScreen() {
     await setLanguage(lang);
     if (Platform.OS !== 'web') {
       Alert.alert(t('more.language'), t('more.languageNote'));
+    }
+  };
+
+  const confirm = async (title: string, message: string): Promise<boolean> => {
+    if (Platform.OS === 'web') return window.confirm(`${title}\n\n${message}`);
+    return new Promise((resolve) => {
+      Alert.alert(title, message, [
+        { text: t('common.cancel'), style: 'cancel', onPress: () => resolve(false) },
+        { text: t('account.deleteConfirm'), style: 'destructive', onPress: () => resolve(true) },
+      ]);
+    });
+  };
+
+  // Two steps on purpose: the preview says what will be lost before anything is
+  // destroyed, and the confirmation is a separate, explicit decision.
+  const deleteAccount = async () => {
+    setDeleting(true);
+    try {
+      const preview = await fetchAccountDeletionPreview();
+
+      if (preview.blocking_buildings.length > 0) {
+        const names = preview.blocking_buildings.map((b) => b.name).join(', ');
+        alertBox(t('account.handoverNeeded'), t('account.handoverNeededBody', { buildings: names }));
+        return;
+      }
+
+      const removed = preview.buildings_removed.map((b) => b.name).join(', ');
+      const body = removed
+        ? t('account.deleteWarningWithBuilding', { buildings: removed })
+        : t('account.deleteWarning');
+
+      if (!(await confirm(t('account.delete'), body))) return;
+
+      await deleteOwnAccount();
+      // The auth listener routes back to sign-in once the session is gone.
+    } catch (e) {
+      if (isHandoverRequired(e)) {
+        alertBox(t('account.handoverNeeded'), t('account.handoverNeededBody', { buildings: '' }));
+      } else {
+        notifyError(e);
+      }
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -95,6 +146,19 @@ export default function MoreScreen() {
       ) : null}
 
       <Button title={t('common.signOut')} variant="danger" onPress={() => signOut()} />
+
+      <SectionTitle>{t('account.section')}</SectionTitle>
+      <Card>
+        <Text style={styles.meta}>{t('account.deleteExplainer')}</Text>
+        <View style={styles.actions}>
+          <Button
+            title={t('account.delete')}
+            variant="danger"
+            onPress={deleteAccount}
+            loading={deleting}
+          />
+        </View>
+      </Card>
     </Screen>
   );
 }

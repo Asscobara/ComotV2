@@ -207,6 +207,9 @@
     footer { border-top: 1px solid var(--border); padding-block: 36px; background: var(--bg-soft); }
     .footer-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; color: var(--ink-soft); font-size: 0.9rem; }
     .footer-row .logo { font-size: 1.1rem; }
+    .footer-links { display: inline-flex; gap: 8px; align-items: center; }
+    .footer-links a { color: var(--ink-soft); text-decoration: none; }
+    .footer-links a:hover { color: var(--primary); text-decoration: underline; }
 
     /* ---------- Responsive ---------- */
     @media (max-width: 980px) {
@@ -458,6 +461,11 @@
         <span>ComOt</span>
       </a>
       <span data-i18n="footer_tag">קומות — ניהול בניין מגורים. iOS · Android · Web</span>
+      <span class="footer-links">
+        <a href="./privacy.html" data-i18n="footer_privacy">מדיניות פרטיות</a>
+        ·
+        <a href="./support.html" data-i18n="footer_support">תמיכה</a>
+      </span>
       <span>© 2026 ComOt</span>
     </div>
   </footer>
@@ -512,7 +520,8 @@
         wl_kicker: 'משיקים בקרוב', wl_title: 'הבניין שלכם ראוי לניהול טוב יותר',
         wl_sub: 'השאירו כתובת אימייל ונעדכן אתכם ברגע שקומות זמינה להורדה — לוועדי בתים, לדיירים ולנותני שירות.',
         wl_placeholder: 'האימייל שלכם', wl_btn: 'עדכנו אותי', wl_success: 'תודה! נעדכן אתכם ברגע שנשיק 🎉',
-        footer_tag: 'קומות — ניהול בניין מגורים. iOS · Android · Web'
+        footer_tag: 'קומות — ניהול בניין מגורים. iOS · Android · Web',
+        footer_privacy: 'מדיניות פרטיות', footer_support: 'תמיכה'
       },
       en: {
         _dir: 'ltr',
@@ -562,7 +571,8 @@
         wl_kicker: 'Launching soon', wl_title: 'Your building deserves better management',
         wl_sub: "Leave your email and we'll let you know the moment ComOt is available — for committees, tenants and service providers.",
         wl_placeholder: 'Your email', wl_btn: 'Notify me', wl_success: "Thanks! We'll be in touch at launch 🎉",
-        footer_tag: 'ComOt — residential building management. iOS · Android · Web'
+        footer_tag: 'ComOt — residential building management. iOS · Android · Web',
+        footer_privacy: 'Privacy policy', footer_support: 'Support'
       }
     };
 

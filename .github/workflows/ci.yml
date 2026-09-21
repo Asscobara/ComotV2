@@ -49,11 +49,13 @@ jobs:
             -f supabase/migrations/0003_events_polls_budget.sql \
             -f supabase/migrations/0004_vendors.sql \
             -f supabase/migrations/0005_notifications.sql \
+            -f supabase/migrations/0006_account_deletion.sql \
             -f supabase/tests/smoke.sql \
             -f supabase/tests/smoke2.sql \
             -f supabase/tests/smoke3.sql \
             -f supabase/tests/smoke4.sql \
-            -f supabase/tests/smoke5.sql
+            -f supabase/tests/smoke5.sql \
+            -f supabase/tests/smoke6.sql
 
       # Separate database: the seed expects an otherwise empty schema, and its
       # assertions count rows. Catches the seed rotting against schema changes,
@@ -68,5 +70,6 @@ jobs:
             -f supabase/migrations/0003_events_polls_budget.sql \
             -f supabase/migrations/0004_vendors.sql \
             -f supabase/migrations/0005_notifications.sql \
+            -f supabase/migrations/0006_account_deletion.sql \
             -f supabase/seed.sql \
             -f supabase/tests/seed_check.sql
