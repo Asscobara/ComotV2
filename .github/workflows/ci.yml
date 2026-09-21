@@ -55,6 +55,20 @@ jobs:
             -f supabase/tests/smoke4.sql \
             -f supabase/tests/smoke5.sql
 
+      # The Google Cloud deployment supplies the auth helpers and API roles that
+      # Supabase provides implicitly, and asserts RLS is enabled with policies on
+      # every table. Running it here means a new table without policies fails the
+      # build rather than reaching production unprotected.
+      - name: Verify the Google Cloud deploy chain
+        run: |
+          psql -h localhost -U postgres -v ON_ERROR_STOP=1 -c "create database comot_gcp"
+          psql -h localhost -U postgres -d comot_gcp -v ON_ERROR_STOP=1 \
+            -f deploy/gcp/sql/01-roles-and-auth.sql \
+            -f deploy/gcp/sql/testing/gotrue-users.sql \
+            $(for f in supabase/migrations/*.sql; do printf -- "-f %s " "$f"; done) \
+            -f deploy/gcp/sql/02-grants.sql \
+            -f deploy/gcp/sql/03-verify.sql
+
       # Separate database: the seed expects an otherwise empty schema, and its
       # assertions count rows. Catches the seed rotting against schema changes,
       # which would otherwise only surface when someone sets up locally.
