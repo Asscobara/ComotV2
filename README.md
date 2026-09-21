@@ -44,8 +44,8 @@ cp apps/mobile/.env.local.example apps/mobile/.env.local   # paste the anon key 
 pnpm web                                             # http://localhost:8081
 ```
 
-Sign in as `dana@comot.test` / `comot1234`. Full walkthrough, including the other demo
-accounts, in [`docs/RUN_LOCALLY.md`](docs/RUN_LOCALLY.md).
+Sign in as `test@comot.test` / `1234`. Full walkthrough, including the other demo accounts
+and service providers, in [`docs/RUN_LOCALLY.md`](docs/RUN_LOCALLY.md).
 
 ## Run it on your phone
 

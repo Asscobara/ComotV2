@@ -45,24 +45,61 @@ quickest way back to a known state after you have made a mess of the data.
 ## Signing in
 
 `supabase/seed.sql` creates a populated building so every screen has something on it.
-All accounts use the password **`comot1234`**.
+
+The quickest way in is the throwaway test account:
+
+| Email | Password |
+| --- | --- |
+| `test@comot.test` | `1234` |
+
+It is a committee member, so it reaches every screen. The rest of the residents use the
+password **`comot1234`**:
 
 | Email | Who they are | Use them to see |
 | --- | --- | --- |
-| `dana@comot.test` | Committee member, apartment 1 | Everything: tenant approval, budget, reports, vendor booking |
-| `yossi@comot.test` | Tenant (owner), apartment 2 | The tenant's more limited view of the same building |
-| `maya@comot.test` | Tenant (renter), apartment 3 | Renter rather than owner |
-| `avi@comot.test` | **Pending** tenant, apartment 4 | The waiting-for-approval screen |
-| `eli@comot.test` | Plumber, not a building member | The separate vendor experience |
+| `dana@comot.test` | Committee, apartment 1 | Everything: approvals, budget, reports, vendor booking |
+| `test@comot.test` | Committee, apartment 2 | Same, with the short password above |
+| `yossi@comot.test` | Tenant (owner), apartment 3 | The tenant's narrower view of the same building |
+| `maya@comot.test` | Tenant (renter), apartment 4 | Renter rather than owner |
+| `avi@comot.test` | **Pending** tenant, apartment 5 | The waiting-for-approval screen |
+| `noa@comot.test` | Tenant (renter), apartment 6 | A second renter |
+| `ronen@comot.test` | Tenant (owner), apartment 7 | Reporter of the open elevator fault |
 
-Sign in as Dana first. The building "הברושים 12" has eight apartments, three active
-tenants, one pending request, an open fault and one in progress, an upcoming residents'
-meeting with a live poll, fees paid by three of eight apartments, and a plumber available
-to book. Avi's pending request means the approval flow has something to act on, and the
-five unpaid apartments mean the budget screen is not uniformly green.
+Service providers sign in with `comot1234` too, and see the vendor side of the app rather
+than a building:
 
-Signing in as Eli shows the vendor side and demonstrates the isolation: he can see his own
-vendor profile and jobs offered to him, and nothing else about the building.
+| Email | Business | Covers |
+| --- | --- | --- |
+| `eli@comot.test` | אלי אינסטלציה | Plumbing, general — Tel Aviv, the building's **preferred** provider |
+| `maor@comot.test` | מאור חשמל | Electricity — Tel Aviv, in the building's book |
+| `gani@comot.test` | ירוק בגן | Gardening — Ramat Gan |
+| `shachar@comot.test` | מעליות שחר | Elevators — Holon, in the building's book |
+| `carmel@comot.test` | ניקיון כרמל | Cleaning — Tel Aviv, in the building's book |
+| `avni@comot.test` | גגות אבני | Roofing — Petah Tikva |
+| `handy@comot.test` | דני הנדימן | General, cleaning — Givatayim |
+| `shifra@comot.test` | שפרה אינסטלציה | Plumbing, elevators — Bat Yam |
+| `bar@comot.test` | בר חשמל ותקשורת | Electricity, general — **inactive**, never appears in matching |
+
+### What is in the building
+
+"הברושים 12" in Tel Aviv, four floors, eight apartments, ₪250 a month due on the 10th:
+
+- **Tenants** — six active across two committee members, owners and renters, one pending
+  join request to approve, and one vacant apartment.
+- **Chat** — a building channel with a conversation in progress, plus a direct message.
+- **Faults** — five, one in each status, spanning elevator, plumbing, electricity, cleaning
+  and gardening. The plumbing one is already in progress with a job accepted by Eli.
+- **Events** — four, one of each kind: an upcoming residents' meeting with a live poll, the
+  monthly fee collection, an annual elevator inspection, and one in the past.
+- **Polls** — one open (neither committee member has voted, so it is still actionable) and
+  one already closed.
+- **Budget** — ten entries across income and expense categories, and fees paid by four of
+  the eight apartments, so the fee screen shows both states.
+- **Providers** — nine covering all seven fault categories across seven cities, four in the
+  building's own book with one preferred, and one inactive to prove matching filters it out.
+
+Open a fault as a committee member and tap the matching action to see the ranking: the
+preferred, in-the-book, same-city provider comes first.
 
 The invite code for joining the building as a new tenant is **`comot123`**.
 
