@@ -69,6 +69,7 @@ For Expo Go and for real signed builds via TestFlight, see
 | Backend resources & connection details | [`docs/BACKEND.md`](docs/BACKEND.md) | ✅ Documented |
 | Running locally (no cloud project) | [`docs/RUN_LOCALLY.md`](docs/RUN_LOCALLY.md) | ✅ Stack config + seed data |
 | App Store submission | [`docs/APP_STORE.md`](docs/APP_STORE.md) | ✅ Prerequisites done; needs an Apple account |
+| Google Cloud backend | [`docs/GCP_MIGRATION.md`](docs/GCP_MIGRATION.md), [`deploy/gcp/`](deploy/gcp/) | ⏳ Terraform + SQL written and verified; needs a GCP project to apply |
 | **Phase 1 — Foundations** | [`apps/mobile/`](apps/mobile/), [`supabase/`](supabase/) | ✅ Implemented |
 | Phase 2 — Chat, events, polls, faults | — | ⏳ Next |
 | Phase 3 — Budget, vendors, matching | — | Planned |
