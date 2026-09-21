@@ -32,6 +32,21 @@ pnpm landing                                   # http://localhost:8080
 pnpm typecheck && pnpm lint
 ```
 
+## Run the whole thing locally
+
+With Docker and the Supabase CLI installed, this brings up the backend and the app with no
+cloud project involved, seeded with a populated demo building:
+
+```bash
+pnpm install
+pnpm db:start                                        # Postgres, Auth, Realtime + migrations + seed
+cp apps/mobile/.env.local.example apps/mobile/.env.local   # paste the anon key it printed
+pnpm web                                             # http://localhost:8081
+```
+
+Sign in as `dana@comot.test` / `comot1234`. Full walkthrough, including the other demo
+accounts, in [`docs/RUN_LOCALLY.md`](docs/RUN_LOCALLY.md).
+
 ## Run it on your phone
 
 The fastest way to try ComOt on an iPhone takes about two minutes and costs nothing: open
@@ -52,6 +67,7 @@ For Expo Go and for real signed builds via TestFlight, see
 | Technology stack | [`docs/TECH_STACK.md`](docs/TECH_STACK.md) | ✅ Approved (Expo + Supabase) |
 | Installing on a device | [`docs/IOS_TESTING.md`](docs/IOS_TESTING.md) | ✅ Home-screen install live; EAS configured |
 | Backend resources & connection details | [`docs/BACKEND.md`](docs/BACKEND.md) | ✅ Documented |
+| Running locally (no cloud project) | [`docs/RUN_LOCALLY.md`](docs/RUN_LOCALLY.md) | ✅ Stack config + seed data |
 | **Phase 1 — Foundations** | [`apps/mobile/`](apps/mobile/), [`supabase/`](supabase/) | ✅ Implemented |
 | Phase 2 — Chat, events, polls, faults | — | ⏳ Next |
 | Phase 3 — Budget, vendors, matching | — | Planned |
