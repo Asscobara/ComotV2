@@ -307,5 +307,26 @@
     "handoverPick": "בחרו את חבר הוועד הנכנס",
     "handoverSent": "ההצעה נשלחה — ממתינה לאישור",
     "fee": "דמי ועד: ₪{{amount}} · יום {{day}} בחודש"
+  },
+  "payments": {
+    "title": "תשלומים",
+    "myFee": "דמי הוועד שלי",
+    "noFee": "לא נקבעו דמי ועד",
+    "freq_monthly": "חודשי",
+    "freq_bimonthly": "דו-חודשי",
+    "freq_quarterly": "רבעוני",
+    "freq_yearly": "שנתי",
+    "dueDay": "לתשלום עד ה-{{day}} בחודש",
+    "apartment": "דירה {{number}}",
+    "statusPaid": "שולם",
+    "statusOutstanding": "לא שולם",
+    "paidOn": "שולם ב-{{date}}",
+    "recordedByCommittee": "התשלום נרשם על ידי ועד הבית לאחר קבלתו.",
+    "outstandingTotal": "ממתינים לתשלום: {{count}} תקופות · {{amount}}",
+    "history": "היסטוריית תשלומים",
+    "historyEmpty": "אין עדיין רשומות תשלום",
+    "noApartment": "לא שויכה דירה",
+    "noApartmentBody": "ועד הבית צריך לשייך לכם דירה כדי לעקוב אחר דמי הוועד.",
+    "collectFees": "💳 גביית דמי ועד מהדיירים"
   }
 }

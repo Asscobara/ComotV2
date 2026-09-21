@@ -307,5 +307,26 @@
     "handoverPick": "Pick the incoming committee member",
     "handoverSent": "Offer sent — waiting for confirmation",
     "fee": "Committee fee: ₪{{amount}} · day {{day}} of the month"
+  },
+  "payments": {
+    "title": "Payments",
+    "myFee": "My committee fee",
+    "noFee": "No fee set",
+    "freq_monthly": "Monthly",
+    "freq_bimonthly": "Every two months",
+    "freq_quarterly": "Quarterly",
+    "freq_yearly": "Yearly",
+    "dueDay": "Due by the {{day}}th of the month",
+    "apartment": "Apartment {{number}}",
+    "statusPaid": "Paid",
+    "statusOutstanding": "Outstanding",
+    "paidOn": "Paid on {{date}}",
+    "recordedByCommittee": "The house committee records your payment once received.",
+    "outstandingTotal": "Outstanding: {{count}} periods · {{amount}}",
+    "history": "Payment history",
+    "historyEmpty": "No payments recorded yet",
+    "noApartment": "No apartment assigned",
+    "noApartmentBody": "The house committee needs to assign you an apartment before fees can be tracked.",
+    "collectFees": "💳 Collect fees from tenants"
   }
 }
