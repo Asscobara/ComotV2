@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<!--
+  Support page. App Store Connect requires a support URL and App Review opens it,
+  so it has to answer real questions rather than just show an email address.
+  Deployed to /ComotV2/support.html by .github/workflows/deploy-web.yml.
+-->
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ComOt — תמיכה | Support</title>
+    <meta name="description" content="תמיכה ב-ComOt — שאלות נפוצות, יצירת קשר ומחיקת חשבון." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Assistant:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #0f172a;
+        --ink-soft: #475569;
+        --primary: #4f46e5;
+        --bg-soft: #f8f9fb;
+        --border: #e2e8f0;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: 'Inter', 'Assistant', system-ui, sans-serif;
+        color: var(--ink);
+        background: #fff;
+        line-height: 1.7;
+      }
+      .wrap { max-width: 760px; margin-inline: auto; padding: 48px 24px 96px; }
+      a { color: var(--primary); }
+      h1 { font-size: 30px; font-weight: 800; margin-bottom: 8px; }
+      h2 { font-size: 20px; font-weight: 800; margin: 36px 0 10px; }
+      p, li { color: var(--ink-soft); }
+      ul { padding-inline-start: 22px; margin: 8px 0; }
+      li { margin-bottom: 6px; }
+      .meta { font-size: 14px; color: var(--ink-soft); margin-bottom: 8px; }
+      .card {
+        background: var(--bg-soft);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin: 14px 0;
+      }
+      .q { font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+      hr { border: none; border-top: 1px solid var(--border); margin: 56px 0; }
+      .en { direction: ltr; text-align: left; }
+      .back { display: inline-block; margin-bottom: 28px; font-weight: 600; }
+    </style>
+  </head>
+
+  <body>
+    <div class="wrap">
+      <a class="back" href="./">← ComOt</a>
+
+      <h1>תמיכה</h1>
+      <p class="meta">
+        מדיניות פרטיות: <a href="./privacy.html">privacy.html</a>
+      </p>
+      <p>
+        ComOt היא אפליקציה לניהול בניין מגורים — דיירים, צ'אט, תקלות, אסיפות, סקרים, תקציב
+        ונותני שירות, במקום אחד.
+      </p>
+
+      <h2>יצירת קשר</h2>
+      <p>
+        אימייל: <a href="mailto:support@comot.app">support@comot.app</a><br />
+        אנחנו משתדלים להשיב תוך שני ימי עסקים. אם מדובר בתקלה, פרטו איזה מסך, מה ציפיתם שיקרה
+        ומה קרה בפועל.
+      </p>
+
+      <h2>שאלות נפוצות</h2>
+
+      <div class="card">
+        <p class="q">איך מצטרפים לבניין?</p>
+        <p>
+          חבר הוועד יוצר את הבניין ומקבל קוד הזמנה. בהרשמה בחרו „הצטרפות לבניין", הזינו את הקוד
+          ובחרו את הדירה שלכם. הבקשה ממתינה לאישור הוועד, ועד אז אינכם רואים את נתוני הבניין.
+        </p>
+      </div>
+
+      <div class="card">
+        <p class="q">אישרתי הרשמה אבל הדייר לא רואה כלום</p>
+        <p>
+          לאחר אישור יש לרענן את המסך או להיכנס מחדש. אם הבקשה עדיין מופיעה כ„ממתינה", האישור
+          לא נשמר — נסו שוב ממסך ניהול הדיירים.
+        </p>
+      </div>
+
+      <div class="card">
+        <p class="q">איך מוחקים חשבון?</p>
+        <p>
+          מתוך האפליקציה: <strong>עוד → החשבון שלי → מחיקת החשבון</strong>. הפעולה מוחקת לצמיתות
+          את הפרטים, ההודעות, התקלות וההצבעות שלכם ואינה ניתנת לשחזור. אם אתם חבר הוועד היחיד
+          בבניין שיש בו דיירים נוספים, העבירו קודם את תפקיד הוועד לדייר אחר.
+        </p>
+      </div>
+
+      <div class="card">
+        <p class="q">האם הצבעה בסקר אנונימית?</p>
+        <p>
+          בסקר שסומן כאנונימי, הבחירה האישית שלכם אינה גלויה לוועד או לדיירים אחרים — רק הסכימום.
+          ההצבעה נשמרת מקושרת לחשבון שלכם כדי למנוע הצבעה כפולה ולאפשר לכם לשנות אותה.
+        </p>
+      </div>
+
+      <div class="card">
+        <p class="q">האם אפשר לשלם דמי ועד באפליקציה?</p>
+        <p>
+          לא בשלב זה. ComOt עוקבת אחרי מה שולם ומה טרם שולם, וּועד הבית מסמן תשלומים שהתקבלו.
+          האפליקציה אינה מעבדת תשלומים ואינה אוספת פרטי כרטיס אשראי.
+        </p>
+      </div>
+
+      <div class="card">
+        <p class="q">איך מחליפים שפה?</p>
+        <p>
+          <strong>עוד → שפה</strong>. באפליקציה במכשיר, שינוי בין עברית לאנגלית מחייב הפעלה
+          מחדש כדי להחליף את כיוון הממשק.
+        </p>
+      </div>
+
+      <div class="card">
+        <p class="q">„לא ניתן להתחבר לשרת"</p>
+        <p>
+          האפליקציה נטענה אך לא הצליחה להגיע לשרת. בדקו את חיבור האינטרנט ונסו שוב. אם התקלה
+          נמשכת, כתבו לנו.
+        </p>
+      </div>
+
+      <hr />
+
+      <div class="en">
+        <h1>Support</h1>
+        <p class="meta">Privacy policy: <a href="./privacy.html">privacy.html</a></p>
+        <p>
+          ComOt is a residential building management app — tenants, chat, faults, meetings,
+          polls, budget and service providers in one place.
+        </p>
+
+        <h2>Contact</h2>
+        <p>
+          Email: <a href="mailto:support@comot.app">support@comot.app</a><br />
+          We aim to reply within two business days. For a problem, tell us which screen, what you
+          expected and what happened instead.
+        </p>
+
+        <h2>Frequently asked</h2>
+
+        <div class="card">
+          <p class="q">How do I join a building?</p>
+          <p>
+            A committee member creates the building and gets an invite code. On sign-up choose
+            "join a building", enter the code and pick your apartment. Your request waits for
+            committee approval, and until then you cannot see the building's data.
+          </p>
+        </div>
+
+        <div class="card">
+          <p class="q">I approved a tenant but they still see nothing</p>
+          <p>
+            After approval the tenant needs to reopen the screen or sign in again. If the request
+            still shows as pending, the approval did not save — try again from the tenants screen.
+          </p>
+        </div>
+
+        <div class="card">
+          <p class="q">How do I delete my account?</p>
+          <p>
+            In the app: <strong>More → My account → Delete my account</strong>. This permanently
+            removes your details, messages, reported faults and votes, and cannot be undone. If
+            you are the only committee member of a building that still has other residents, hand
+            the committee role to another tenant first.
+          </p>
+        </div>
+
+        <div class="card">
+          <p class="q">Are poll votes anonymous?</p>
+          <p>
+            In a poll marked anonymous your individual choice is not visible to the committee or
+            to other residents — only the totals are. Your vote is stored linked to your account
+            so that double voting is prevented and you can change it.
+          </p>
+        </div>
+
+        <div class="card">
+          <p class="q">Can I pay committee fees in the app?</p>
+          <p>
+            Not at this stage. ComOt tracks what has and has not been paid, and the house
+            committee marks payments as received. The app does not process payments and never
+            collects card details.
+          </p>
+        </div>
+
+        <div class="card">
+          <p class="q">How do I change language?</p>
+          <p>
+            <strong>More → Language</strong>. On a phone, switching between Hebrew and English
+            needs an app restart to flip the layout direction.
+          </p>
+        </div>
+
+        <div class="card">
+          <p class="q">"Can't reach the server"</p>
+          <p>
+            The app loaded but could not reach the backend. Check your connection and try again.
+            If it persists, write to us.
+          </p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -49,11 +49,13 @@ jobs:
             -f supabase/migrations/0003_events_polls_budget.sql \
             -f supabase/migrations/0004_vendors.sql \
             -f supabase/migrations/0005_notifications.sql \
+            -f supabase/migrations/0006_account_deletion.sql \
             -f supabase/tests/smoke.sql \
             -f supabase/tests/smoke2.sql \
             -f supabase/tests/smoke3.sql \
             -f supabase/tests/smoke4.sql \
-            -f supabase/tests/smoke5.sql
+            -f supabase/tests/smoke5.sql \
+            -f supabase/tests/smoke6.sql
 
       # The Google Cloud deployment supplies the auth helpers and API roles that
       # Supabase provides implicitly, and asserts RLS is enabled with policies on
@@ -82,5 +84,6 @@ jobs:
             -f supabase/migrations/0003_events_polls_budget.sql \
             -f supabase/migrations/0004_vendors.sql \
             -f supabase/migrations/0005_notifications.sql \
+            -f supabase/migrations/0006_account_deletion.sql \
             -f supabase/seed.sql \
             -f supabase/tests/seed_check.sql
