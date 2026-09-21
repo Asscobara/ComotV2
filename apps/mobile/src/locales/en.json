@@ -174,8 +174,6 @@
     "description": "Description",
     "location": "Location",
     "startsAt": "Date & time",
-    "startsAtHint": "e.g. 2026-07-01 19:00",
-    "badDate": "Invalid date format",
     "recurrence": "Recurrence",
     "rec_none": "One-time",
     "rec_weekly": "Weekly",
@@ -186,7 +184,8 @@
     "delete": "Delete event",
     "deleteConfirm": "Delete this event?",
     "polls": "Polls",
-    "discussion": "Virtual meeting room"
+    "discussion": "Virtual meeting room",
+    "pickDateTime": "Pick a date and time"
   },
   "polls": {
     "title": "Polls",

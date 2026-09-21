@@ -174,8 +174,6 @@
     "description": "תיאור",
     "location": "מיקום",
     "startsAt": "תאריך ושעה",
-    "startsAtHint": "למשל 2026-07-01 19:00",
-    "badDate": "פורמט תאריך לא תקין",
     "recurrence": "חזרתיות",
     "rec_none": "חד־פעמי",
     "rec_weekly": "שבועי",
@@ -186,7 +184,8 @@
     "delete": "מחיקת האירוע",
     "deleteConfirm": "למחוק את האירוע?",
     "polls": "סקרים",
-    "discussion": "חדר דיון וירטואלי"
+    "discussion": "חדר דיון וירטואלי",
+    "pickDateTime": "בחרו תאריך ושעה"
   },
   "polls": {
     "title": "סקרים",
