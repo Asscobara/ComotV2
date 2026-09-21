@@ -1,0 +1,35 @@
+# Local development stack for `supabase start` — Postgres, Auth, Realtime and Studio
+# in Docker, with no cloud project involved. Anything omitted here falls back to the
+# CLI default: https://supabase.com/docs/guides/local-development/cli/config
+#
+# Migrations in ./migrations and the demo data in ./seed.sql are both applied by
+# `supabase db reset`.
+
+project_id = "comot"
+
+[api]
+enabled = true
+port = 54321
+
+[db]
+port = 54322
+major_version = 17
+
+[studio]
+enabled = true
+port = 54323
+
+# No buckets exist in this project, so skip the container entirely.
+[storage]
+enabled = false
+
+[auth]
+enabled = true
+# Expo's web dev server, which is also where OAuth is allowed to redirect back to.
+site_url = "http://localhost:8081"
+additional_redirect_urls = ["http://localhost:8081", "comot://"]
+
+[auth.email]
+enable_signup = true
+# Local sign-ups would otherwise need a confirmation mail opened for every account.
+enable_confirmations = false
