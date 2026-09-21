@@ -87,9 +87,7 @@ also the quickest way to confirm a migration set applies cleanly before touching
 project:
 
 ```bash
-# Dropping first keeps this re-runnable: setup.sql recreates the cluster-wide
-# app_user role, which cannot be dropped while an old test database still
-# references it.
+# Dropping first gives a clean slate and makes this re-runnable.
 psql -v ON_ERROR_STOP=1 -c "drop database if exists comot_test" -c "create database comot_test"
 psql -d comot_test -v ON_ERROR_STOP=1 \
   -f tests/setup.sql \
