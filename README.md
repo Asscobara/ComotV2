@@ -51,6 +51,7 @@ For Expo Go and for real signed builds via TestFlight, see
 | Marketing landing page | [`apps/landing/`](apps/landing/) | ✅ Built in approved design |
 | Technology stack | [`docs/TECH_STACK.md`](docs/TECH_STACK.md) | ✅ Approved (Expo + Supabase) |
 | Installing on a device | [`docs/IOS_TESTING.md`](docs/IOS_TESTING.md) | ✅ Home-screen install live; EAS configured |
+| Backend resources & connection details | [`docs/BACKEND.md`](docs/BACKEND.md) | ✅ Documented |
 | **Phase 1 — Foundations** | [`apps/mobile/`](apps/mobile/), [`supabase/`](supabase/) | ✅ Implemented |
 | Phase 2 — Chat, events, polls, faults | — | ⏳ Next |
 | Phase 3 — Budget, vendors, matching | — | Planned |

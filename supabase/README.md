@@ -37,12 +37,16 @@ supabase link --project-ref <your-project-ref>
 supabase db push
 ```
 
-   A correct run leaves 20 tables, all with RLS enabled, plus 46 policies and 72 functions.
-   Verify with:
+   A correct run leaves 20 tables with RLS enabled on every one, plus 46 policies, 8 enum
+   types, 49 indexes and 16 triggers. Verify with:
 
 ```sql
 select count(*) as tables from pg_tables where schemaname = 'public';
+select count(*) as policies from pg_policies where schemaname = 'public';
 ```
+
+   [`../docs/BACKEND.md`](../docs/BACKEND.md) lists every object by name, along with the
+   endpoints and connection strings.
 
 3. Enable social providers (Google / Apple / Facebook) under **Authentication → Providers**, and add the app scheme `comot://` to the redirect allow-list for native OAuth.
 
