@@ -68,6 +68,7 @@ For Expo Go and for real signed builds via TestFlight, see
 | Installing on a device | [`docs/IOS_TESTING.md`](docs/IOS_TESTING.md) | ✅ Home-screen install live; EAS configured |
 | Backend resources & connection details | [`docs/BACKEND.md`](docs/BACKEND.md) | ✅ Documented |
 | Running locally (no cloud project) | [`docs/RUN_LOCALLY.md`](docs/RUN_LOCALLY.md) | ✅ Stack config + seed data |
+| Google Cloud backend | [`docs/GCP_MIGRATION.md`](docs/GCP_MIGRATION.md), [`deploy/gcp/`](deploy/gcp/) | ⏳ Terraform + SQL written and verified; needs a GCP project to apply |
 | **Phase 1 — Foundations** | [`apps/mobile/`](apps/mobile/), [`supabase/`](supabase/) | ✅ Implemented |
 | Phase 2 — Chat, events, polls, faults | — | ⏳ Next |
 | Phase 3 — Budget, vendors, matching | — | Planned |
