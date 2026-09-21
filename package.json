@@ -8,7 +8,11 @@
     "web": "pnpm --filter mobile web",
     "typecheck": "turbo run typecheck",
     "lint": "turbo run lint",
-    "landing": "python3 -m http.server 8080 --directory apps/landing"
+    "landing": "python3 -m http.server 8080 --directory apps/landing",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "db:status": "supabase status"
   },
   "devDependencies": {
     "turbo": "^2.5.0"

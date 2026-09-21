@@ -54,3 +54,19 @@ jobs:
             -f supabase/tests/smoke3.sql \
             -f supabase/tests/smoke4.sql \
             -f supabase/tests/smoke5.sql
+
+      # Separate database: the seed expects an otherwise empty schema, and its
+      # assertions count rows. Catches the seed rotting against schema changes,
+      # which would otherwise only surface when someone sets up locally.
+      - name: Apply seed data and verify it
+        run: |
+          psql -h localhost -U postgres -v ON_ERROR_STOP=1 -c "create database comot_seed"
+          psql -h localhost -U postgres -d comot_seed -v ON_ERROR_STOP=1 \
+            -f supabase/tests/setup.sql \
+            -f supabase/migrations/0001_init.sql \
+            -f supabase/migrations/0002_chat_faults.sql \
+            -f supabase/migrations/0003_events_polls_budget.sql \
+            -f supabase/migrations/0004_vendors.sql \
+            -f supabase/migrations/0005_notifications.sql \
+            -f supabase/seed.sql \
+            -f supabase/tests/seed_check.sql
