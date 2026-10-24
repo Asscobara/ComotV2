@@ -29,34 +29,11 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
 
+      # Rebases the install paths and stamps the service worker with the hashed
+      # bundle names, which is what makes Chrome offer "Install app".
       - name: Build app for the /ComotV2/app subpath
         working-directory: apps/mobile
-        run: |
-          node -e "
-            const fs = require('fs');
-            const a = JSON.parse(fs.readFileSync('app.json', 'utf8'));
-            a.expo.experiments = { ...a.expo.experiments, baseUrl: '/ComotV2/app' };
-            fs.writeFileSync('app.json', JSON.stringify(a, null, 2));
-          "
-          pnpm exec expo export --platform web
-
-      # public/index.html ships root-absolute PWA hrefs so they work in local
-      # dev; on Pages the app lives under a subpath, so rebase them here.
-      - name: Rebase home-screen install paths onto the subpath
-        working-directory: apps/mobile
-        run: |
-          node -e "
-            const fs = require('fs');
-            const base = '/ComotV2/app';
-            const file = 'dist/index.html';
-            let html = fs.readFileSync(file, 'utf8');
-            for (const href of ['/manifest.webmanifest', '/icons/icon-1024.png']) {
-              const next = html.replaceAll('href=\"' + href + '\"', 'href=\"' + base + href + '\"');
-              if (next === html) throw new Error('no href to rebase for ' + href);
-              html = next;
-            }
-            fs.writeFileSync(file, html);
-          "
+        run: pnpm run export:web --base /ComotV2/app
 
       - name: Assemble site (landing at /, app at /app/)
         run: |

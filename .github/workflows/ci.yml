@@ -20,6 +20,28 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm lint
 
+  web:
+    name: Web build & install readiness
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      # Deploy Web only runs on main, so without this a change that breaks the
+      # export — or quietly breaks installability — would land before anyone saw.
+      - name: Export the web build the way Pages does
+        working-directory: apps/mobile
+        run: pnpm run export:web --base /ComotV2/app
+
+      - name: Check the build is installable
+        working-directory: apps/mobile
+        run: node scripts/check-web-install.mjs
+
   database:
     name: Schema & RLS smoke tests
     runs-on: ubuntu-latest
