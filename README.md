@@ -47,14 +47,25 @@ pnpm web                                             # http://localhost:8081
 Sign in as `test@comot.test` / `1234`. Full walkthrough, including the other demo accounts
 and service providers, in [`docs/RUN_LOCALLY.md`](docs/RUN_LOCALLY.md).
 
-## Run it on your phone
+## Install it
 
-The fastest way to try ComOt on an iPhone takes about two minutes and costs nothing: open
-<https://asscobara.github.io/ComotV2/app/> in Safari, then *Share > Add to Home Screen*. It
-installs as a standalone app against the live backend.
+<https://asscobara.github.io/ComotV2/download.html> works out which device you are on and
+shows the right route. Both take under a minute and cost nothing:
 
-For Expo Go and for real signed builds via TestFlight, see
-[`docs/IOS_TESTING.md`](docs/IOS_TESTING.md).
+- **Chrome or Edge**, on a desktop or on Android — open the app and accept the install
+  prompt. You get an icon, a window with no browser bars, and an app that still opens when
+  the network is down. On Android it is installed as a WebAPK, so it lands in the app
+  drawer like any other app.
+- **iPhone or iPad** — open the app in Safari, then *Share > Add to Home Screen*.
+
+Push notifications and biometric sign-in are the only things that need a store build.
+[`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md) covers every route and what the App Store
+and Play releases still need; [`docs/IOS_TESTING.md`](docs/IOS_TESTING.md) covers Expo Go
+and signed builds while developing.
+
+```bash
+pnpm release:check    # what still stands between here and a store release
+```
 
 ## Project status
 
@@ -65,10 +76,11 @@ For Expo Go and for real signed builds via TestFlight, see
 | Logo | [`docs/LOGO_OPTIONS.md`](docs/LOGO_OPTIONS.md) | ✅ Selected — Option B "C Monogram Building" |
 | Marketing landing page | [`apps/landing/`](apps/landing/) | ✅ Built in approved design |
 | Technology stack | [`docs/TECH_STACK.md`](docs/TECH_STACK.md) | ✅ Approved (Expo + Supabase) |
-| Installing on a device | [`docs/IOS_TESTING.md`](docs/IOS_TESTING.md) | ✅ Home-screen install live; EAS configured |
+| Installing on a device | [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md), [`docs/IOS_TESTING.md`](docs/IOS_TESTING.md) | ✅ Installable from Chrome, Edge and Safari; EAS build and submit wired |
 | Backend resources & connection details | [`docs/BACKEND.md`](docs/BACKEND.md) | ✅ Documented |
 | Running locally (no cloud project) | [`docs/RUN_LOCALLY.md`](docs/RUN_LOCALLY.md) | ✅ Stack config + seed data |
-| App Store submission | [`docs/APP_STORE.md`](docs/APP_STORE.md) | ✅ Prerequisites done; needs an Apple account |
+| App Store submission | [`docs/APP_STORE.md`](docs/APP_STORE.md) | ✅ Build, submit and listing prepared; needs an Apple account |
+| Google Play submission | [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md) | ✅ Build and submit wired; needs a Play account |
 | Google Cloud backend | [`docs/GCP_MIGRATION.md`](docs/GCP_MIGRATION.md), [`deploy/gcp/`](deploy/gcp/) | ⏳ Terraform + SQL written and verified; needs a GCP project to apply |
 | **Phase 1 — Foundations** | [`apps/mobile/`](apps/mobile/), [`supabase/`](supabase/) | ✅ Implemented |
 | Phase 2 — Chat, events, polls, faults | — | ⏳ Next |

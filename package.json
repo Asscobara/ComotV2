@@ -8,6 +8,8 @@
     "web": "pnpm --filter mobile web",
     "typecheck": "turbo run typecheck",
     "lint": "turbo run lint",
+    "release:check": "node scripts/release-check.mjs",
+    "export:web": "pnpm --filter mobile export:web",
     "landing": "python3 -m http.server 8080 --directory apps/landing",
     "db:start": "supabase start",
     "db:stop": "supabase stop",
