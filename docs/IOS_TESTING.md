@@ -1,7 +1,8 @@
 # Testing ComOt on your iPhone
 
 There are three ways to get ComOt onto your phone. They differ in cost, setup effort, and
-how close they are to the real shipped app.
+how close they are to the real shipped app. For the whole distribution picture, including
+Chrome and Android, see [`DISTRIBUTION.md`](DISTRIBUTION.md).
 
 | Path | Cost | Setup | Real native app? | Best for |
 | --- | --- | --- | --- | --- |

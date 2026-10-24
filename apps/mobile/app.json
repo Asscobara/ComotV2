@@ -17,6 +17,7 @@
       }
     },
     "android": {
+      "package": "com.comot.app",
       "adaptiveIcon": {
         "backgroundColor": "#4F46E5",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

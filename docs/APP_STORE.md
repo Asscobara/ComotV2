@@ -3,8 +3,9 @@
 Everything in this repository that submission depends on is in place. What remains needs an
 Apple account, so it has to be done by the account holder.
 
-Read [`IOS_TESTING.md`](IOS_TESTING.md) first if you have not produced a build yet; this
-document picks up from there and covers review and the store listing.
+Read [`IOS_TESTING.md`](IOS_TESTING.md) first if you have not produced a build yet, and
+[`DISTRIBUTION.md`](DISTRIBUTION.md) for the build and submit pipeline and the repository
+secrets it needs. This document picks up from there and covers review and the listing.
 
 ## What you have to do
 
@@ -68,13 +69,17 @@ Review opens both pages. Point it at a mailbox you actually read.
 ## Submitting
 
 ```bash
+pnpm release:check   # the checks below, run against the live deployment
+
 cd apps/mobile
 pnpm dlx eas-cli@latest build --platform ios --profile production --auto-submit
 ```
 
 Or run the **Mobile Build (EAS)** workflow from the Actions tab with profile `production`
 and submit enabled. Either way EAS builds on its own Macs, uploads to App Store Connect, and
-the build appears for TestFlight after processing.
+the build appears for TestFlight after processing. The workflow submits with an App Store
+Connect API key rather than an Apple ID, because an unattended job cannot answer a
+two-factor prompt — see [`DISTRIBUTION.md`](DISTRIBUTION.md) for the secrets.
 
 Test it through TestFlight yourself before submitting for review. Then in App Store Connect
 attach the build to a version, fill in the listing below, and submit.

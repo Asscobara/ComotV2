@@ -6,8 +6,9 @@
   Expo substitutes each placeholder token only once, so do not repeat the two
   tokens below anywhere else in this file — including in comments.
 
-  The manifest and icon hrefs are root-absolute so they resolve from any route;
-  .github/workflows/deploy-web.yml rewrites them for the /ComotV2/app subpath.
+  The manifest, icon and service-worker paths are root-absolute so they resolve
+  from any route; scripts/export-web.mjs rebases them, and __COMOT_BASE_URL__,
+  onto the deployment subpath (/ComotV2/app on GitHub Pages).
 -->
 <!-- dir is Hebrew-first to match the product; src/lib/i18n.ts corrects it for English. -->
 <html lang="%LANG_ISO_CODE%" dir="rtl">
@@ -28,6 +29,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="ComOt" />
     <meta name="application-name" content="ComOt" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon-180.png" />
     <link rel="apple-touch-icon" sizes="1024x1024" href="/icons/icon-1024.png" />
 
     <!-- The `react-native-web` recommended style reset: https://necolas.github.io/react-native-web/docs/setup/#root-element -->
@@ -57,10 +59,225 @@
         overscroll-behavior-y: none;
       }
     </style>
+
+    <style id="comot-shell-chrome">
+      /* The install and offline bars live outside #root so they are plain DOM:
+         the install prompt has to be handled before React has booted, and an
+         offline notice is most useful exactly when the bundle did not load. */
+      .comot-bar {
+        position: fixed;
+        inset-inline: 0;
+        z-index: 2147483000;
+        font-family: 'Assistant', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      }
+      .comot-bar[hidden] {
+        display: none;
+      }
+      #comot-offline {
+        top: 0;
+        padding: calc(env(safe-area-inset-top) + 7px) 14px 7px;
+        background: #0f172a;
+        color: #fff;
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-align: center;
+      }
+      #comot-install {
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px calc(env(safe-area-inset-bottom) + 12px);
+        background: #fff;
+        border-top: 1px solid #e2e8f0;
+        box-shadow: 0 -10px 30px -18px rgba(15, 23, 42, 0.45);
+      }
+      #comot-install img {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        flex-shrink: 0;
+      }
+      #comot-install .comot-copy {
+        flex: 1;
+        min-width: 0;
+        line-height: 1.35;
+      }
+      #comot-install .comot-title {
+        font-size: 0.92rem;
+        font-weight: 800;
+        color: #0f172a;
+      }
+      #comot-install .comot-sub {
+        font-size: 0.78rem;
+        color: #475569;
+      }
+      #comot-install button {
+        font-family: inherit;
+        cursor: pointer;
+        border-radius: 999px;
+        border: none;
+      }
+      #comot-install .comot-accept {
+        background: #4f46e5;
+        color: #fff;
+        font-size: 0.86rem;
+        font-weight: 800;
+        padding: 10px 20px;
+      }
+      #comot-install .comot-dismiss {
+        background: transparent;
+        color: #94a3b8;
+        font-size: 1.25rem;
+        line-height: 1;
+        padding: 6px 10px;
+      }
+    </style>
   </head>
 
   <body>
     <noscript> You need to enable JavaScript to run this app. </noscript>
     <div id="root"></div>
+
+    <div class="comot-bar" id="comot-offline" role="status" hidden></div>
+
+    <div class="comot-bar" id="comot-install" role="dialog" aria-live="polite" hidden>
+      <img src="/icons/icon-192.png" alt="" />
+      <div class="comot-copy">
+        <div class="comot-title"></div>
+        <div class="comot-sub"></div>
+      </div>
+      <button type="button" class="comot-accept"></button>
+      <button type="button" class="comot-dismiss" aria-label="Dismiss">&times;</button>
+    </div>
+
+    <script>
+      window.__COMOT_BASE_URL__ = '/';
+    </script>
+    <script>
+      (function () {
+        var COPY = {
+          he: {
+            title: 'התקנת ComOt',
+            sub: 'מוסיפים את האפליקציה למסך הבית ונכנסים אליה בלחיצה אחת.',
+            install: 'התקנה',
+            offline: 'אין חיבור לאינטרנט — מוצגים הנתונים האחרונים שנטענו.',
+          },
+          en: {
+            title: 'Install ComOt',
+            sub: 'Add the app to your home screen and open it in one tap.',
+            install: 'Install',
+            offline: 'You are offline — showing the last data that loaded.',
+          },
+        };
+
+        function language() {
+          try {
+            var stored = window.localStorage.getItem('comot-lang');
+            if (stored === 'he' || stored === 'en') return stored;
+          } catch (err) {
+            /* storage can be blocked; fall through to the document language */
+          }
+          return document.documentElement.lang === 'en' ? 'en' : 'he';
+        }
+
+        var copy = COPY[language()];
+
+        /* ---- offline notice ---------------------------------------------- */
+        var offlineBar = document.getElementById('comot-offline');
+        offlineBar.textContent = copy.offline;
+        function syncOnlineState() {
+          offlineBar.hidden = navigator.onLine !== false;
+        }
+        window.addEventListener('online', syncOnlineState);
+        window.addEventListener('offline', syncOnlineState);
+        syncOnlineState();
+
+        /* ---- install prompt ----------------------------------------------
+         * Chrome fires beforeinstallprompt once the manifest and a fetch-handling
+         * service worker are both in place, and only outside an installed window.
+         * Keeping the event is the only way to show the prompt on our own button;
+         * the browser's own install affordance stays available either way. */
+        var DISMISS_KEY = 'comot-install-dismissed';
+        var bar = document.getElementById('comot-install');
+        var deferred = null;
+
+        // The landing page's install button sends people here with ?install=1,
+        // and arriving on that link is a clear enough intent to override an
+        // earlier dismissal.
+        var requested = /[?&]install=1\b/.test(window.location.search);
+
+        function dismissed() {
+          if (requested) return false;
+          try {
+            return window.localStorage.getItem(DISMISS_KEY) === '1';
+          } catch (err) {
+            return false;
+          }
+        }
+
+        function hide() {
+          bar.hidden = true;
+        }
+
+        window.addEventListener('beforeinstallprompt', function (event) {
+          event.preventDefault();
+          deferred = event;
+          if (dismissed()) return;
+
+          bar.querySelector('.comot-title').textContent = copy.title;
+          bar.querySelector('.comot-sub').textContent = copy.sub;
+          bar.querySelector('.comot-accept').textContent = copy.install;
+          bar.hidden = false;
+        });
+
+        bar.querySelector('.comot-accept').addEventListener('click', function () {
+          hide();
+          if (!deferred) return;
+          deferred.prompt();
+          deferred = null;
+        });
+
+        bar.querySelector('.comot-dismiss').addEventListener('click', function () {
+          hide();
+          try {
+            window.localStorage.setItem(DISMISS_KEY, '1');
+          } catch (err) {
+            /* a dismissal we cannot remember is better than a crash */
+          }
+        });
+
+        window.addEventListener('appinstalled', function () {
+          deferred = null;
+          hide();
+          try {
+            window.localStorage.setItem(DISMISS_KEY, '1');
+          } catch (err) {
+            /* nothing to do */
+          }
+        });
+
+        /* ---- service worker ---------------------------------------------- */
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', function () {
+            navigator.serviceWorker.register(window.__COMOT_BASE_URL__ + 'sw.js').catch(function () {
+              /* no worker means no offline mode and no install prompt, but the
+                 app itself still runs, so this must not surface as an error */
+            });
+          });
+
+          // A worker taking over mid-session means a newer deploy went live, so
+          // reload onto it. The very first install also claims the page, and
+          // that one is not a new deploy — hence the check for a prior worker.
+          var hadController = !!navigator.serviceWorker.controller;
+          var reloading = false;
+          navigator.serviceWorker.addEventListener('controllerchange', function () {
+            if (!hadController || reloading) return;
+            reloading = true;
+            window.location.reload();
+          });
+        }
+      })();
+    </script>
   </body>
 </html>

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<!--
+  Download / install page — the single place the site sends anyone who wants
+  ComOt on their device, for every platform at once.
+
+  The App Store, TestFlight and Google Play buttons are driven by STORE_LINKS
+  at the bottom of this file: fill a URL in and that button goes live, leave it
+  empty and it stays a "coming soon" placeholder. Nothing else needs editing.
+
+  Deployed to /ComotV2/download.html by .github/workflows/deploy-web.yml.
+-->
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ComOt — הורדת האפליקציה</title>
+  <meta name="description" content="התקנת ComOt על האייפון, על אנדרואיד ובדפדפן Chrome — ניהול בניין מגורים: דיירים, צ'אט, תשלומי ועד, תקלות, אסיפות וסקרים." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=Assistant:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234F46E5'/%3E%3Cg transform='translate(8,8) scale(0.75)'%3E%3Cpolygon points='6,6 58,14 58,24 16,17 16,47 58,40 58,50 6,58' fill='%23FFFFFF'/%3E%3Cpolygon points='24,27 46,29.5 46,36.5 24,37' fill='%23C7D2FE'/%3E%3C/g%3E%3C/svg%3E" />
+  <style>
+    :root {
+      --bg-soft: #F8F9FB;
+      --surface: #FFFFFF;
+      --ink: #0F172A;
+      --ink-soft: #475569;
+      --primary: #4F46E5;
+      --primary-dark: #4338CA;
+      --primary-soft: #EEF2FF;
+      --periwinkle: #C7D2FE;
+      --border: #E2E8F0;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+      --shadow: 0 16px 36px -18px rgba(79, 70, 229, 0.35);
+      --shadow-soft: 0 8px 24px -16px rgba(15, 23, 42, 0.16);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', 'Assistant', system-ui, sans-serif;
+      background: #fff; color: var(--ink); line-height: 1.6;
+    }
+    .container { max-width: 980px; margin-inline: auto; padding-inline: 24px; }
+    a { color: var(--primary); }
+
+    header {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav { display: flex; align-items: center; justify-content: space-between; padding-block: 14px; gap: 16px; }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 1.3rem; color: var(--ink); text-decoration: none; }
+    .nav-actions { display: flex; align-items: center; gap: 10px; }
+    .lang-toggle {
+      border: 1.5px solid var(--border); background: transparent; color: var(--primary);
+      font-family: inherit; font-weight: 700; font-size: 0.85rem;
+      padding: 7px 14px; border-radius: 999px; cursor: pointer;
+    }
+    .lang-toggle:hover { background: var(--primary-soft); }
+
+    .btn {
+      display: inline-block; font-family: inherit; font-weight: 700; text-decoration: none;
+      cursor: pointer; border: none; border-radius: var(--radius-sm); text-align: center;
+      transition: transform .15s, background .2s;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { background: var(--primary); color: #fff; padding: 12px 26px; font-size: 1rem; box-shadow: var(--shadow); }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-ghost { background: transparent; color: var(--primary); padding: 11px 22px; font-size: 0.95rem; border: 1.5px solid var(--periwinkle); }
+    .btn-ghost:hover { background: var(--primary-soft); }
+
+    .hero { padding-block: 56px 28px; text-align: center; }
+    .kicker {
+      display: inline-flex; align-items: center; gap: 8px; background: var(--primary-soft); color: var(--primary);
+      font-weight: 700; font-size: 0.82rem; padding: 6px 15px; border-radius: 999px; border: 1px solid var(--periwinkle);
+    }
+    h1 { font-size: clamp(2rem, 4.5vw, 2.9rem); font-weight: 900; line-height: 1.15; margin-top: 18px; letter-spacing: -0.02em; }
+    .hero p { margin-top: 14px; color: var(--ink-soft); font-size: 1.08rem; max-width: 46em; margin-inline: auto; }
+
+    .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; padding-block: 32px 16px; }
+    @media (max-width: 760px) { .cards { grid-template-columns: 1fr; } }
+
+    .card {
+      position: relative; background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 26px 24px; box-shadow: var(--shadow-soft);
+      display: flex; flex-direction: column;
+    }
+    .card.recommended { border-color: var(--primary); box-shadow: var(--shadow); }
+    .card .flag {
+      position: absolute; top: -12px; inset-inline-start: 22px;
+      background: var(--primary); color: #fff; font-size: 0.72rem; font-weight: 800;
+      padding: 4px 12px; border-radius: 999px;
+    }
+    .card .flag[hidden] { display: none; }
+    .card-ico { font-size: 1.7rem; line-height: 1; }
+    .card h2 { font-size: 1.2rem; font-weight: 800; margin-top: 12px; }
+    .card .lede { color: var(--ink-soft); font-size: 0.95rem; margin-top: 6px; }
+    .card ol, .card ul { margin: 14px 0 0; padding-inline-start: 20px; color: var(--ink-soft); font-size: 0.93rem; }
+    .card li { margin-bottom: 5px; }
+    .card .actions { margin-top: auto; padding-top: 18px; display: flex; flex-wrap: wrap; gap: 10px; }
+    .card .note { margin-top: 12px; font-size: 0.85rem; color: var(--ink-soft); background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 13px; }
+
+    .store-badge {
+      display: inline-flex; align-items: center; gap: 10px; background: var(--ink); color: #fff;
+      border-radius: var(--radius-sm); padding: 9px 18px; text-decoration: none;
+    }
+    .store-badge small { display: block; font-size: 0.65rem; opacity: .75; line-height: 1.2; }
+    .store-badge strong { display: block; font-size: 0.95rem; line-height: 1.25; }
+    .store-badge.pending { background: #E2E8F0; color: #64748B; cursor: default; pointer-events: none; }
+
+    .strip { background: var(--bg-soft); border-top: 1px solid var(--border); margin-top: 40px; padding-block: 36px 44px; }
+    .strip h2 { font-size: 1.15rem; font-weight: 800; }
+    .matrix { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.92rem; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+    .matrix th, .matrix td { padding: 11px 14px; text-align: start; border-bottom: 1px solid var(--border); }
+    .matrix th { background: var(--primary-soft); color: var(--primary); font-weight: 800; font-size: 0.85rem; }
+    .matrix tr:last-child td { border-bottom: none; }
+    .matrix td:not(:first-child) { text-align: center; }
+
+    footer { border-top: 1px solid var(--border); padding-block: 26px; }
+    .footer-row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center; color: var(--ink-soft); font-size: 0.88rem; }
+    .footer-row a { font-weight: 600; }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="container nav">
+      <a class="logo" href="./">
+        <svg width="28" height="28" viewBox="0 0 64 64" aria-hidden="true">
+          <rect width="64" height="64" rx="14" fill="#4F46E5" />
+          <g transform="translate(8,8) scale(0.75)">
+            <polygon points="6,6 58,14 58,24 16,17 16,47 58,40 58,50 6,58" fill="#FFFFFF" />
+            <polygon points="24,27 46,29.5 46,36.5 24,37" fill="#C7D2FE" />
+          </g>
+        </svg>
+        <span>ComOt</span>
+      </a>
+      <div class="nav-actions">
+        <button class="lang-toggle" id="langToggle" aria-label="Switch language">EN</button>
+        <a class="btn btn-ghost" href="./" data-i18n="nav_back">חזרה לאתר</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero container">
+    <span class="kicker" data-i18n="kicker">זמין עכשיו בדפדפן ובמסך הבית</span>
+    <h1 data-i18n="title">מתקינים את ComOt על המכשיר</h1>
+    <p data-i18n="sub">ComOt רצה היום כאפליקציית ווב מלאה — אותו קוד שירוץ בגרסאות החנויות, עם אותו שרת ואותם נתונים. בוחרים את המכשיר שלכם ומתקינים בפחות מדקה.</p>
+  </section>
+
+  <div class="container cards">
+
+    <!-- Chrome / Edge -->
+    <div class="card" id="card-chrome">
+      <span class="flag" data-i18n="flag" hidden>מומלץ למכשיר שלכם</span>
+      <span class="card-ico">🌐</span>
+      <h2 data-i18n="chrome_t">Chrome ו-Edge — מחשב ואנדרואיד</h2>
+      <p class="lede" data-i18n="chrome_d">Chrome מתקין את ComOt כאפליקציה אמיתית: חלון משלה, אייקון במסך הבית או בשולחן העבודה, ועבודה גם בלי חיבור לרשת.</p>
+      <ol>
+        <li data-i18n="chrome_s1">לוחצים על „התקנה" — האפליקציה נפתחת ומציעה להתקין.</li>
+        <li data-i18n="chrome_s2">מאשרים בחלונית ההתקנה של הדפדפן.</li>
+        <li data-i18n="chrome_s3">ComOt מופיעה בין שאר האפליקציות במכשיר.</li>
+      </ol>
+      <p class="note" data-i18n="chrome_note">לא רואים את הכפתור? בתפריט הדפדפן (⋮) בחרו „התקנת אפליקציה", או לחצו על אייקון ההתקנה שבשורת הכתובת.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="./app/?install=1" data-i18n="chrome_cta">התקנה</a>
+        <a class="btn btn-ghost" href="./app/" data-i18n="open_browser">פתיחה בדפדפן</a>
+      </div>
+    </div>
+
+    <!-- iPhone / iPad -->
+    <div class="card" id="card-ios">
+      <span class="flag" data-i18n="flag" hidden>מומלץ למכשיר שלכם</span>
+      <span class="card-ico">📱</span>
+      <h2 data-i18n="ios_t">אייפון ואייפד</h2>
+      <p class="lede" data-i18n="ios_d">אפל מאפשרת התקנה למסך הבית רק דרך Safari. התוצאה היא אפליקציה במסך הבית עם אייקון משלה, בלי סרגלי הדפדפן.</p>
+      <ol>
+        <li data-i18n="ios_s1">פותחים את הדף הזה ב-Safari (לא ב-Chrome).</li>
+        <li data-i18n="ios_s2">לוחצים „פתיחה בדפדפן" ואז על כפתור השיתוף.</li>
+        <li data-i18n="ios_s3">בוחרים „הוספה למסך הבית" ומאשרים.</li>
+      </ol>
+      <p class="note" data-i18n="ios_note">Chrome באייפון אינו יכול להתקין אפליקציות ווב — זו מגבלה של iOS, לא של ComOt. העתיקו את הכתובת ל-Safari.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="./app/" data-i18n="open_browser">פתיחה בדפדפן</a>
+      </div>
+    </div>
+
+    <!-- App Store -->
+    <div class="card" id="card-appstore">
+      <!-- Inline rather than the  glyph, which only renders on Apple devices. -->
+      <span class="card-ico">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+      </span>
+      <h2 data-i18n="apple_t">App Store ו-TestFlight</h2>
+      <p class="lede" data-i18n="apple_d">הגרסה המקומית לאייפון נבנית ונשלחת ל-App Store Connect אוטומטית. הקישורים כאן נדלקים ברגע שהגרסה מאושרת לבדיקות או לפרסום.</p>
+      <ul>
+        <li data-i18n="apple_l1">התראות דחיפה והתחברות ביומטרית — רק בגרסה המקומית.</li>
+        <li data-i18n="apple_l2">עד אז, אפליקציית הווב נותנת את כל שאר היכולות.</li>
+      </ul>
+      <div class="actions">
+        <a class="store-badge pending" id="badge-appstore" href="#"><svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg><span><small data-i18n="apple_badge_small">בקרוב ב-</small><strong>App Store</strong></span></a>
+        <a class="store-badge pending" id="badge-testflight" href="#"><span style="font-size:1.25rem">✈️</span><span><small data-i18n="tf_badge_small">בדיקות מוקדמות</small><strong>TestFlight</strong></span></a>
+      </div>
+    </div>
+
+    <!-- Google Play -->
+    <div class="card" id="card-play">
+      <span class="card-ico">▶</span>
+      <h2 data-i18n="play_t">Google Play</h2>
+      <p class="lede" data-i18n="play_d">גרסת האנדרואיד נבנית מאותו קוד. באנדרואיד, התקנה דרך Chrome כבר יוצרת אפליקציה מלאה במגירת האפליקציות — אין צורך לחכות לחנות.</p>
+      <ul>
+        <li data-i18n="play_l1">ההתקנה דרך Chrome זמינה עכשיו.</li>
+        <li data-i18n="play_l2">הפרסום בחנות ממתין לחשבון מפתח של Google Play.</li>
+      </ul>
+      <div class="actions">
+        <a class="store-badge pending" id="badge-play" href="#"><span style="font-size:1.25rem">▶</span><span><small data-i18n="play_badge_small">בקרוב ב-</small><strong>Google Play</strong></span></a>
+      </div>
+    </div>
+  </div>
+
+  <section class="strip">
+    <div class="container">
+      <h2 data-i18n="matrix_t">מה מקבלים בכל דרך</h2>
+      <table class="matrix">
+        <thead>
+          <tr>
+            <th data-i18n="m_h1">יכולת</th>
+            <th data-i18n="m_h2">התקנה מהדפדפן</th>
+            <th data-i18n="m_h3">גרסת חנות</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td data-i18n="m_r1">כל מסכי האפליקציה והנתונים החיים</td><td>✅</td><td>✅</td></tr>
+          <tr><td data-i18n="m_r2">אייקון משלה וחלון בלי סרגלי דפדפן</td><td>✅</td><td>✅</td></tr>
+          <tr><td data-i18n="m_r3">עברית מלאה עם RTL ואנגלית</td><td>✅</td><td>✅</td></tr>
+          <tr><td data-i18n="m_r4">פתיחה בלי חיבור לרשת (המסכים שנטענו)</td><td>✅</td><td>✅</td></tr>
+          <tr><td data-i18n="m_r5">התראות דחיפה כשהאפליקציה סגורה</td><td>—</td><td data-i18n="m_planned">מתוכנן</td></tr>
+          <tr><td data-i18n="m_r6">התחברות ביומטרית</td><td>—</td><td data-i18n="m_planned2">מתוכנן</td></tr>
+        </tbody>
+      </table>
+      <p style="margin-top:14px;color:var(--ink-soft);font-size:0.9rem" data-i18n="matrix_note">בכל הדרכים מדובר באותה אפליקציה ובאותו שרת — אפשר להתחיל מהדפדפן ולעבור לגרסת החנות בלי לאבד דבר.</p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container footer-row">
+      <span data-i18n="footer_tag">קומות — ניהול בניין מגורים. iOS · Android · Web</span>
+      <span>
+        <a href="./privacy.html" data-i18n="footer_privacy">מדיניות פרטיות</a>
+        ·
+        <a href="./support.html" data-i18n="footer_support">תמיכה</a>
+      </span>
+      <span>© 2026 ComOt</span>
+    </div>
+  </footer>
+
+  <script>
+    /* Fill a URL in and that button goes live. Empty means "coming soon". */
+    const STORE_LINKS = {
+      appStore: '',
+      testFlight: '',
+      googlePlay: '',
+    };
+
+    const translations = {
+      he: {
+        _dir: 'rtl',
+        _title: 'ComOt — הורדת האפליקציה',
+        nav_back: 'חזרה לאתר',
+        kicker: 'זמין עכשיו בדפדפן ובמסך הבית',
+        title: 'מתקינים את ComOt על המכשיר',
+        sub: 'ComOt רצה היום כאפליקציית ווב מלאה — אותו קוד שירוץ בגרסאות החנויות, עם אותו שרת ואותם נתונים. בוחרים את המכשיר שלכם ומתקינים בפחות מדקה.',
+        flag: 'מומלץ למכשיר שלכם',
+        open_browser: 'פתיחה בדפדפן',
+        chrome_t: 'Chrome ו-Edge — מחשב ואנדרואיד',
+        chrome_d: 'Chrome מתקין את ComOt כאפליקציה אמיתית: חלון משלה, אייקון במסך הבית או בשולחן העבודה, ועבודה גם בלי חיבור לרשת.',
+        chrome_s1: 'לוחצים על „התקנה" — האפליקציה נפתחת ומציעה להתקין.',
+        chrome_s2: 'מאשרים בחלונית ההתקנה של הדפדפן.',
+        chrome_s3: 'ComOt מופיעה בין שאר האפליקציות במכשיר.',
+        chrome_note: 'לא רואים את הכפתור? בתפריט הדפדפן (⋮) בחרו „התקנת אפליקציה", או לחצו על אייקון ההתקנה שבשורת הכתובת.',
+        chrome_cta: 'התקנה',
+        ios_t: 'אייפון ואייפד',
+        ios_d: 'אפל מאפשרת התקנה למסך הבית רק דרך Safari. התוצאה היא אפליקציה במסך הבית עם אייקון משלה, בלי סרגלי הדפדפן.',
+        ios_s1: 'פותחים את הדף הזה ב-Safari (לא ב-Chrome).',
+        ios_s2: 'לוחצים „פתיחה בדפדפן" ואז על כפתור השיתוף.',
+        ios_s3: 'בוחרים „הוספה למסך הבית" ומאשרים.',
+        ios_note: 'Chrome באייפון אינו יכול להתקין אפליקציות ווב — זו מגבלה של iOS, לא של ComOt. העתיקו את הכתובת ל-Safari.',
+        apple_t: 'App Store ו-TestFlight',
+        apple_d: 'הגרסה המקומית לאייפון נבנית ונשלחת ל-App Store Connect אוטומטית. הקישורים כאן נדלקים ברגע שהגרסה מאושרת לבדיקות או לפרסום.',
+        apple_l1: 'התראות דחיפה והתחברות ביומטרית — רק בגרסה המקומית.',
+        apple_l2: 'עד אז, אפליקציית הווב נותנת את כל שאר היכולות.',
+        apple_badge_small: 'בקרוב ב-',
+        apple_badge_small_live: 'זמין ב-',
+        tf_badge_small: 'בדיקות מוקדמות',
+        play_t: 'Google Play',
+        play_d: 'גרסת האנדרואיד נבנית מאותו קוד. באנדרואיד, התקנה דרך Chrome כבר יוצרת אפליקציה מלאה במגירת האפליקציות — אין צורך לחכות לחנות.',
+        play_l1: 'ההתקנה דרך Chrome זמינה עכשיו.',
+        play_l2: 'הפרסום בחנות ממתין לחשבון מפתח של Google Play.',
+        play_badge_small: 'בקרוב ב-',
+        play_badge_small_live: 'זמין ב-',
+        matrix_t: 'מה מקבלים בכל דרך',
+        m_h1: 'יכולת', m_h2: 'התקנה מהדפדפן', m_h3: 'גרסת חנות',
+        m_r1: 'כל מסכי האפליקציה והנתונים החיים',
+        m_r2: 'אייקון משלה וחלון בלי סרגלי דפדפן',
+        m_r3: 'עברית מלאה עם RTL ואנגלית',
+        m_r4: 'פתיחה בלי חיבור לרשת (המסכים שנטענו)',
+        m_r5: 'התראות דחיפה כשהאפליקציה סגורה',
+        m_r6: 'התחברות ביומטרית',
+        m_planned: 'מתוכנן', m_planned2: 'מתוכנן',
+        matrix_note: 'בכל הדרכים מדובר באותה אפליקציה ובאותו שרת — אפשר להתחיל מהדפדפן ולעבור לגרסת החנות בלי לאבד דבר.',
+        footer_tag: 'קומות — ניהול בניין מגורים. iOS · Android · Web',
+        footer_privacy: 'מדיניות פרטיות', footer_support: 'תמיכה'
+      },
+      en: {
+        _dir: 'ltr',
+        _title: 'ComOt — Get the app',
+        nav_back: 'Back to site',
+        kicker: 'Available now in your browser and on your home screen',
+        title: 'Install ComOt on your device',
+        sub: 'ComOt already runs as a full web app — the same code the store builds ship, against the same backend and the same data. Pick your device and install it in under a minute.',
+        flag: 'Recommended for your device',
+        open_browser: 'Open in browser',
+        chrome_t: 'Chrome & Edge — desktop and Android',
+        chrome_d: 'Chrome installs ComOt as a real app: its own window, an icon on your home screen or desktop, and it keeps working offline.',
+        chrome_s1: 'Tap Install — the app opens and offers to install itself.',
+        chrome_s2: 'Confirm in the browser\u2019s install dialog.',
+        chrome_s3: 'ComOt appears alongside your other apps.',
+        chrome_note: 'No button? Open the browser menu (⋮) and choose "Install app", or click the install icon in the address bar.',
+        chrome_cta: 'Install',
+        ios_t: 'iPhone & iPad',
+        ios_d: 'Apple only allows home-screen installs from Safari. You get an app on your home screen with its own icon and no browser bars.',
+        ios_s1: 'Open this page in Safari (not Chrome).',
+        ios_s2: 'Tap "Open in browser", then the Share button.',
+        ios_s3: 'Choose "Add to Home Screen" and confirm.',
+        ios_note: 'Chrome on iPhone cannot install web apps — that is an iOS restriction, not a ComOt one. Copy the address into Safari.',
+        apple_t: 'App Store & TestFlight',
+        apple_d: 'The native iPhone build is produced and uploaded to App Store Connect automatically. These links switch on as soon as a build is approved for testing or release.',
+        apple_l1: 'Push notifications and biometric sign-in are native-only.',
+        apple_l2: 'Until then the web app gives you everything else.',
+        apple_badge_small: 'Soon on the',
+        apple_badge_small_live: 'Download on the',
+        tf_badge_small: 'Early testing',
+        play_t: 'Google Play',
+        play_d: 'The Android build comes from the same code. On Android, installing through Chrome already produces a full app in your app drawer — no need to wait for the store.',
+        play_l1: 'Installing through Chrome works today.',
+        play_l2: 'Store publishing is waiting on a Google Play developer account.',
+        play_badge_small: 'Soon on',
+        play_badge_small_live: 'Get it on',
+        matrix_t: 'What each route gives you',
+        m_h1: 'Capability', m_h2: 'Installed from the browser', m_h3: 'Store build',
+        m_r1: 'Every app screen, against live data',
+        m_r2: 'Its own icon and a window with no browser bars',
+        m_r3: 'Full Hebrew with RTL, and English',
+        m_r4: 'Opens without a connection (screens already loaded)',
+        m_r5: 'Push notifications while the app is closed',
+        m_r6: 'Biometric sign-in',
+        m_planned: 'Planned', m_planned2: 'Planned',
+        matrix_note: 'Every route is the same app on the same backend — start in the browser and move to a store build later without losing anything.',
+        footer_tag: 'ComOt — residential building management. iOS · Android · Web',
+        footer_privacy: 'Privacy policy', footer_support: 'Support'
+      }
+    };
+
+    let lang = localStorage.getItem('comot-lang') === 'en' ? 'en' : 'he';
+
+    function applyLang(l) {
+      lang = l;
+      localStorage.setItem('comot-lang', l);
+      const t = translations[l];
+      document.documentElement.lang = l;
+      document.documentElement.dir = t._dir;
+      document.title = t._title;
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (t[key] !== undefined) el.textContent = t[key];
+      });
+      document.getElementById('langToggle').textContent = l === 'he' ? 'EN' : 'עב';
+      applyStoreLinks(t);
+    }
+
+    function activate(badgeId, url, caption) {
+      const badge = document.getElementById(badgeId);
+      if (!url) return;
+      badge.classList.remove('pending');
+      badge.href = url;
+      badge.target = '_blank';
+      badge.rel = 'noopener';
+      const small = badge.querySelector('small');
+      if (caption) small.textContent = caption;
+    }
+
+    function applyStoreLinks(t) {
+      activate('badge-appstore', STORE_LINKS.appStore, t.apple_badge_small_live);
+      activate('badge-testflight', STORE_LINKS.testFlight, null);
+      activate('badge-play', STORE_LINKS.googlePlay, t.play_badge_small_live);
+    }
+
+    /* Highlight the card that matches the visitor's device rather than making
+       them work out which of four routes applies to them. */
+    function recommendCard() {
+      const ua = navigator.userAgent;
+      const isIOS = /iPad|iPhone|iPod/.test(ua) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const isChromium = !isIOS && /Chrome|Chromium|Edg\//.test(ua);
+
+      const id = isIOS ? 'card-ios' : isChromium ? 'card-chrome' : null;
+      if (!id) return;
+
+      const card = document.getElementById(id);
+      card.classList.add('recommended');
+      card.querySelector('.flag').hidden = false;
+      card.parentNode.prepend(card);
+    }
+
+    document.getElementById('langToggle').addEventListener('click', () => {
+      applyLang(lang === 'he' ? 'en' : 'he');
+    });
+
+    applyLang(lang);
+    recommendCard();
+  </script>
+</body>
+</html>
