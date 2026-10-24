@@ -1,0 +1,91 @@
+name: Mobile Submit (EAS Submit)
+
+# Sends a finished EAS build to App Store Connect (TestFlight) or to the Play
+# Console, without rebuilding. Use this when a build already exists — for a
+# fresh build that goes straight to the store, run Mobile Build (EAS) with
+# submit enabled instead.
+#
+# Submitting unattended needs API credentials rather than an Apple ID, because
+# an Apple ID means two-factor prompts. See docs/DISTRIBUTION.md for how to
+# create them and which repository secrets to set.
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Store to submit to
+        type: choice
+        default: ios
+        options: [ios, android]
+      build_id:
+        description: EAS build ID to submit (blank = the latest finished build)
+        type: string
+        default: ''
+
+jobs:
+  submit:
+    name: Submit ${{ inputs.platform }}
+    runs-on: ubuntu-latest
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+    steps:
+      - name: Check the required secrets are present
+        env:
+          ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
+          ASC_API_KEY_ID: ${{ secrets.ASC_API_KEY_ID }}
+          ASC_API_KEY_ISSUER_ID: ${{ secrets.ASC_API_KEY_ISSUER_ID }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          PLATFORM: ${{ inputs.platform }}
+        run: |
+          fail() { echo "::error::$1"; exit 1; }
+          [ -n "$EXPO_TOKEN" ] || fail "EXPO_TOKEN is missing. Create one at https://expo.dev/settings/access-tokens."
+          if [ "$PLATFORM" = "ios" ]; then
+            [ -n "$ASC_API_KEY_P8" ] || fail "ASC_API_KEY_P8 is missing. See docs/DISTRIBUTION.md for how to create an App Store Connect API key."
+            [ -n "$ASC_API_KEY_ID" ] || fail "ASC_API_KEY_ID is missing."
+            [ -n "$ASC_API_KEY_ISSUER_ID" ] || fail "ASC_API_KEY_ISSUER_ID is missing."
+          else
+            [ -n "$GOOGLE_SERVICE_ACCOUNT_JSON" ] || fail "GOOGLE_SERVICE_ACCOUNT_JSON is missing. See docs/DISTRIBUTION.md."
+          fi
+
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # eas.json reads these paths from the environment, so the key only ever
+      # exists on the runner's disk for the length of this job.
+      - name: Write store credentials
+        id: creds
+        env:
+          ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          dir="$RUNNER_TEMP/store-credentials"
+          mkdir -p "$dir" && chmod 700 "$dir"
+          if [ "${{ inputs.platform }}" = "ios" ]; then
+            printf '%s' "$ASC_API_KEY_P8" > "$dir/asc-api-key.p8"
+            echo "ASC_API_KEY_PATH=$dir/asc-api-key.p8" >> "$GITHUB_ENV"
+          else
+            printf '%s' "$GOOGLE_SERVICE_ACCOUNT_JSON" > "$dir/play-service-account.json"
+            echo "GOOGLE_SERVICE_ACCOUNT_KEY_PATH=$dir/play-service-account.json" >> "$GITHUB_ENV"
+          fi
+
+      - name: Submit
+        working-directory: apps/mobile
+        env:
+          ASC_API_KEY_ID: ${{ secrets.ASC_API_KEY_ID }}
+          ASC_API_KEY_ISSUER_ID: ${{ secrets.ASC_API_KEY_ISSUER_ID }}
+          PLATFORM: ${{ inputs.platform }}
+          BUILD_ID: ${{ inputs.build_id }}
+        run: |
+          args=(--platform "$PLATFORM" --profile production-ci --non-interactive)
+          if [ -n "$BUILD_ID" ]; then
+            args+=(--id "$BUILD_ID")
+          else
+            args+=(--latest)
+          fi
+          pnpm dlx eas-cli@latest submit "${args[@]}"

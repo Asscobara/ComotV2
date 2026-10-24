@@ -2,6 +2,9 @@ name: Mobile Build (EAS)
 
 # Runs a native build on Expo's cloud builders, so no Mac or Xcode is needed
 # locally. Requires the EXPO_TOKEN repository secret (see docs/IOS_TESTING.md).
+#
+# Submitting from here also needs store API credentials, because an unattended
+# job cannot answer an Apple two-factor prompt. docs/DISTRIBUTION.md lists them.
 
 on:
   workflow_dispatch:
@@ -44,16 +47,47 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      # eas.json reads these paths from the environment. The keys only exist on
+      # the runner's disk, and only for the length of this job.
+      - name: Write store credentials
+        if: inputs.submit
+        env:
+          ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
+          ASC_API_KEY_ID: ${{ secrets.ASC_API_KEY_ID }}
+          ASC_API_KEY_ISSUER_ID: ${{ secrets.ASC_API_KEY_ISSUER_ID }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          PLATFORM: ${{ inputs.platform }}
+        run: |
+          fail() { echo "::error::$1"; exit 1; }
+          dir="$RUNNER_TEMP/store-credentials"
+          mkdir -p "$dir" && chmod 700 "$dir"
+
+          if [ "$PLATFORM" != "android" ]; then
+            [ -n "$ASC_API_KEY_P8" ] && [ -n "$ASC_API_KEY_ID" ] && [ -n "$ASC_API_KEY_ISSUER_ID" ] \
+              || fail "Submitting to App Store Connect needs ASC_API_KEY_P8, ASC_API_KEY_ID and ASC_API_KEY_ISSUER_ID. See docs/DISTRIBUTION.md."
+            printf '%s' "$ASC_API_KEY_P8" > "$dir/asc-api-key.p8"
+            echo "ASC_API_KEY_PATH=$dir/asc-api-key.p8" >> "$GITHUB_ENV"
+          fi
+
+          if [ "$PLATFORM" != "ios" ]; then
+            [ -n "$GOOGLE_SERVICE_ACCOUNT_JSON" ] \
+              || fail "Submitting to Google Play needs GOOGLE_SERVICE_ACCOUNT_JSON. See docs/DISTRIBUTION.md."
+            printf '%s' "$GOOGLE_SERVICE_ACCOUNT_JSON" > "$dir/play-service-account.json"
+            echo "GOOGLE_SERVICE_ACCOUNT_KEY_PATH=$dir/play-service-account.json" >> "$GITHUB_ENV"
+          fi
+
       # --no-wait returns as soon as the build is queued; progress is on expo.dev.
       - name: Queue build
         working-directory: apps/mobile
         run: |
           args=(--platform "$PLATFORM" --profile "$PROFILE" --non-interactive --no-wait)
           if [ "$SUBMIT" = "true" ]; then
-            args+=(--auto-submit)
+            args+=(--auto-submit-with-profile production-ci)
           fi
           pnpm dlx eas-cli@latest build "${args[@]}"
         env:
+          ASC_API_KEY_ID: ${{ secrets.ASC_API_KEY_ID }}
+          ASC_API_KEY_ISSUER_ID: ${{ secrets.ASC_API_KEY_ISSUER_ID }}
           PLATFORM: ${{ inputs.platform }}
           PROFILE: ${{ inputs.profile }}
           SUBMIT: ${{ inputs.submit }}
